@@ -1,0 +1,2 @@
+# www to apex is not set here. Cloudflare Pages redirects cannot change the hostname
+# to the zone apex. Point www at the apex in DNS instead.
