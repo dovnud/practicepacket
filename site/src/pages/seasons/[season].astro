@@ -18,11 +18,16 @@ const path = `/seasons/${season.slug}/`
   { name: season.title, path },
 ])}>
   <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Seasons', href: '/seasons/' }, { label: season.title }]} />
-  <h1>{season.title}</h1>
-  <p class="lede">{season.plan}</p>
-  <ol>
+  <div class="page-intro">
+    <h1>{season.title}</h1>
+    <p class="lede">{season.plan}</p>
+  </div>
+  <div class="cards">
     {season.skills.map((skill) => (
-      <li><a href={skillPath(skill)}>{skill.title}</a> <span class="muted">({GRADE_LABEL[skill.grade]}, medium level is the default PDF)</span></li>
+      <a class="card" href={skillPath(skill)}>
+        <h2>{skill.title}</h2>
+        <p>{GRADE_LABEL[skill.grade]}. Medium level is the default PDF.</p>
+      </a>
     ))}
-  </ol>
+  </div>
 </Base>

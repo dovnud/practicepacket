@@ -1,14 +1,20 @@
 ---
+import Logo from './Logo.astro'
 import { GRADE_LABEL, gradesWithSkills } from '../lib/skills.ts'
 import { liveSeasons } from '../lib/catalog.ts'
 const grades = gradesWithSkills()
 const seasons = liveSeasons()
 ---
 <header class="site">
-  <div class="wrap">
-    <div class="bar">
-      <a class="brand" href="/">Practice Packet <small>Printable K–5 math</small></a>
-    </div>
+  <div class="wrap bar">
+    <a class="brand" href="/">
+      <Logo />
+    </a>
+    <input id="nav-toggle" class="nav-toggle" type="checkbox" />
+    <label class="nav-burger" for="nav-toggle">
+      <span class="sr">Open menu</span>
+      <span></span><span></span><span></span>
+    </label>
     <nav aria-label="Primary">
       <ul>
         {grades.map((g) => (

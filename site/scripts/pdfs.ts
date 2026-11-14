@@ -30,10 +30,24 @@ async function writePdf(file: string, title: string, direction: string, problems
   await finished(stream)
 }
 
+function drawMark(doc: PDFKit.PDFDocument, x: number, y: number) {
+  doc.save()
+  doc.lineWidth(1.2).roundedRect(x, y, 16, 18, 3).stroke()
+  doc.moveTo(x + 3, y + 6).lineTo(x + 13, y + 6).stroke()
+  doc.moveTo(x + 3, y + 10).lineTo(x + 13, y + 10).stroke()
+  doc.moveTo(x + 3, y + 14).lineTo(x + 9, y + 14).stroke()
+  doc.restore()
+}
+
 function drawPage(doc: PDFKit.PDFDocument, title: string, direction: string, problems: Problem[], key: boolean) {
-  doc.font('Times-Bold').fontSize(16).text(title, { width: 516 })
+  drawMark(doc, 48, 36)
+  doc.font('Helvetica-Bold').fontSize(11).fillColor('#111').text('Practice Packet', 70, 36, { lineBreak: false })
+  doc.font('Helvetica').fontSize(8).fillColor('#333').text('practicepacket.com', 70, 50, { lineBreak: false })
+  doc.moveTo(48, 64).lineTo(564, 64).strokeColor('#111').lineWidth(0.6).stroke()
+  doc.fillColor('#111')
+  doc.font('Helvetica-Bold').fontSize(16).text(title, 48, 74, { width: 516 })
   doc.moveDown(0.3)
-  doc.font('Times-Roman').fontSize(11).text(direction)
+  doc.font('Helvetica').fontSize(11).text(direction)
   if (!key) {
     doc.moveDown(0.4)
     doc.text('Name ___________________________    Date ______________')
@@ -47,9 +61,9 @@ function drawPage(doc: PDFKit.PDFDocument, title: string, direction: string, pro
     const x = 48 + col * colW
     const y = startY + row * 78
     if (y > 700) return
-    doc.font('Times-Roman').fontSize(12).text(`${index + 1}.`, x, y, { lineBreak: false })
+    doc.font('Helvetica').fontSize(12).text(`${index + 1}.`, x, y, { lineBreak: false })
     if (key) {
-      doc.font('Times-Bold').text(problem.answer, x + 22, y, { width: colW - 30 })
+      doc.font('Helvetica-Bold').text(problem.answer, x + 22, y, { width: colW - 30 })
       return
     }
     drawProblem(doc, problem, x + 22, y, colW - 30)
@@ -58,7 +72,7 @@ function drawPage(doc: PDFKit.PDFDocument, title: string, direction: string, pro
 
 function drawProblem(doc: PDFKit.PDFDocument, problem: Problem, x: number, y: number, width: number) {
   const d = problem.display
-  doc.font('Times-Roman').fontSize(12)
+  doc.font('Helvetica').fontSize(12)
   if (d.kind === 'vertical') {
     doc.text(d.a, x, y, { width: 70, align: 'right' })
     doc.text(`${d.op} ${d.b}`, x, y + 14, { width: 70, align: 'right' })
@@ -111,7 +125,7 @@ function drawBar(doc: PDFKit.PDFDocument, x: number, y: number, den: number, num
   const w = 90 / den
   for (let i = 0; i < den; i++) {
     doc.rect(x + i * w, y, w, 14)
-    if (i < num) doc.fillAndStroke('#1f3a5f', '#1c1915')
+    if (i < num) doc.fillAndStroke('#111111', '#111111')
     else doc.stroke()
   }
 }

@@ -1,14 +1,32 @@
 ---
+import Logo from './Logo.astro'
+import { GRADE_LABEL, gradesWithSkills } from '../lib/skills.ts'
+const grades = gradesWithSkills()
 ---
 <footer class="site">
-  <div class="wrap">
-    <ul>
-      <li><a href="/about/">About</a></li>
-      <li><a href="/standards/">Standards notice</a></li>
-      <li><a href="/privacy/">Privacy</a></li>
-      <li><a href="/terms/">Terms</a></li>
-      <li><a href="/contact/">Contact</a></li>
-    </ul>
-    <p>Practice Packet. Free classroom and home printables. No account required.</p>
+  <div class="wrap foot">
+    <div>
+      <Logo />
+      <p>Free classroom and home printables. No account required.</p>
+    </div>
+    <div>
+      <h2>Grades</h2>
+      <ul>
+        {grades.map((g) => (
+          <li><a href={`/grade-${g}/`}>{GRADE_LABEL[g]}</a></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h2>Practice Packet</h2>
+      <ul>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/standards/">Standards notice</a></li>
+        <li><a href="/privacy/">Privacy</a></li>
+        <li><a href="/terms/">Terms</a></li>
+        <li><a href="/contact/">Contact</a></li>
+        <li><a href="mailto:contact@practicepacket.com">contact@practicepacket.com</a></li>
+      </ul>
+    </div>
   </div>
 </footer>

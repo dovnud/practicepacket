@@ -1,5 +1,9 @@
 ---
 const enabled = import.meta.env.PUBLIC_ADS === 'on'
 ---
-<div class="ad-slot no-print" data-ad-slot="below-actions" data-enabled={enabled ? 'true' : 'false'} hidden={!enabled}>
-</div>
+<div
+  class="ad-slot no-print"
+  data-ad-slot="below-actions"
+  data-enabled={enabled ? 'true' : 'false'}
+  aria-hidden={enabled ? 'false' : 'true'}
+></div>

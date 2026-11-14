@@ -2,7 +2,7 @@
 import Base from '../../../layouts/Base.astro'
 import Breadcrumbs from '../../../components/Breadcrumbs.astro'
 import { breadcrumbLd } from '../../../lib/catalog.ts'
-import { GRADE_LABEL, SUBJECT_LABEL, gradesWithSkills, subjectsFor, topicsFor, type GradeId, type SubjectId } from '../../../lib/skills.ts'
+import { GRADE_LABEL, SUBJECT_LABEL, gradesWithSkills, skillsFor, subjectsFor, topicsFor, type GradeId, type SubjectId } from '../../../lib/skills.ts'
 
 export function getStaticPaths() {
   const paths = []
@@ -15,10 +15,14 @@ export function getStaticPaths() {
 }
 interface Props { grade: GradeId; subject: SubjectId }
 const { grade, subject } = Astro.props
-const topics = topicsFor(grade, subject)
+const topics = topicsFor(grade, subject).map((topic) => ({
+  ...topic,
+  count: skillsFor(grade, subject, topic.topic).length,
+}))
 const path = `/grade-${grade}/${subject}/`
 const title = `${GRADE_LABEL[grade]} ${SUBJECT_LABEL[subject]} | Practice Packet`
 const description = `${GRADE_LABEL[grade]} ${SUBJECT_LABEL[subject].toLowerCase()} topics, each linking to a single-skill worksheet.`
+const tone: Record<string, string> = { k: 'var(--gk)', '1': 'var(--g1)', '2': 'var(--g2)', '3': 'var(--g3)', '4': 'var(--g4)', '5': 'var(--g5)' }
 ---
 <Base title={title} description={description} path={path} jsonld={breadcrumbLd([
   { name: 'Home', path: '/' },
@@ -30,11 +34,15 @@ const description = `${GRADE_LABEL[grade]} ${SUBJECT_LABEL[subject].toLowerCase(
     { label: GRADE_LABEL[grade], href: `/grade-${grade}/` },
     { label: SUBJECT_LABEL[subject] },
   ]} />
-  <h1>{GRADE_LABEL[grade]} {SUBJECT_LABEL[subject]}</h1>
+  <div class="page-intro">
+    <h1>{GRADE_LABEL[grade]} {SUBJECT_LABEL[subject]}</h1>
+  </div>
   <div class="cards">
     {topics.map((topic) => (
-      <a class="card" href={`${path}${topic.topic}/`}>
+      <a class="card" href={`${path}${topic.topic}/`} style={`--grade:${tone[grade]}`}>
+        <span class="chip">{topic.count}</span>
         <h2>{topic.label}</h2>
+        <p>{topic.count === 1 ? '1 skill' : `${topic.count} skills`}</p>
       </a>
     ))}
   </div>

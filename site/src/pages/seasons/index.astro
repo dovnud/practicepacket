@@ -5,8 +5,10 @@ const seasons = liveSeasons()
 const description = 'Seasonal sets of Practice Packet math skills for short weeks in the school year.'
 ---
 <Base title="Seasonal packets | Practice Packet" description={description} path="/seasons/">
-  <h1>Seasonal packets</h1>
-  <p class="lede">These are not new worksheets. They are short plans that point at skills already on the site, timed to the part of the year when people look for them.</p>
+  <div class="page-intro">
+    <h1>Seasonal packets</h1>
+    <p class="lede">These are not new worksheets. They are short plans that point at skills already on the site, timed to the part of the year when people look for them.</p>
+  </div>
   {seasons.length === 0 ? <p>No seasonal packet has enough published skills yet.</p> : (
     <div class="cards">
       {seasons.map((season) => (
