@@ -1,7 +1,18 @@
-# Worksheet site research
+# Practice Packet
 
-Phase 1 research for a possible K–8 printable worksheet site. No site is built here.
+Free printable math worksheets for kindergarten through grade 5. Research notes are in `research/`. The site is in `site/`.
 
-The decision write-up is [research/00-summary.md](research/00-summary.md). The rest of `research/` is the evidence: competitors, ads, keywords, seasonality, AI Overviews, ad networks, affiliates, standards licenses, page quality, URL plan, page counts, a 200-sheet test, and domain RDAP checks.
+## Build
 
-Figures are marked in those files as verified (with the page they came from) or estimated (with the assumption). Nothing in this repo was registered, bought, or signed up for.
+```bash
+cd site
+npm install
+npm test
+npm run build
+npm run pdfs
+npm run audit
+```
+
+`MAX_BATCH` defaults to 3 and controls which publish wave is rendered (1, 2, or 3). `PDF_BASE_URL` defaults to `/pdf/` and is the prefix for worksheet downloads. HTML goes to `site/dist` for Cloudflare Pages. PDFs go to `site/pdf-out` and are meant for R2, not for the Pages upload.
+
+`npm run dev` serves the site on port 4329. PDF links 404 until the files are hosted at `PDF_BASE_URL`.

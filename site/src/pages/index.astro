@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro'
+import { GRADE_LABEL, gradesWithSkills, skillPath, publishedSkills } from '../lib/skills.ts'
+import { liveSeasons } from '../lib/catalog.ts'
+const grades = gradesWithSkills()
+const featured = publishedSkills().filter((s) => s.batch === 1).slice(0, 8)
+const description = 'Free printable math worksheets for kindergarten through grade 5. One skill per page, three levels, and an answer key. No login.'
+---
+<Base title="Practice Packet | Free printable math worksheets" description={description} path="/">
+  <h1>Worksheets for one skill at a time</h1>
+  <p class="lede">Practice Packet is a free set of printable math pages for kindergarten through grade 5. Each page is a single skill, with an easy, medium, and hard set, a worked example, and an answer key made from the same problems.</p>
+  <div class="cards">
+    {grades.map((grade) => (
+      <a class="card" href={`/grade-${grade}/`}>
+        <h2>{GRADE_LABEL[grade]}</h2>
+        <p>{publishedSkills().filter((s) => s.grade === grade).length} math skills</p>
+      </a>
+    ))}
+  </div>
+  <h2>Start here</h2>
+  <ul>
+    {featured.map((skill) => (
+      <li><a href={skillPath(skill)}>{skill.title}</a> <span class="muted">({GRADE_LABEL[skill.grade]})</span></li>
+    ))}
+  </ul>
+  {liveSeasons().length > 0 && (
+    <>
+      <h2>Seasonal packets</h2>
+      <p>The same skills, grouped for a short week of the school year.</p>
+      <p><a href="/seasons/">See seasonal packets</a></p>
+    </>
+  )}
+</Base>
