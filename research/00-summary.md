@@ -6,17 +6,17 @@ Research date: 14 November 2026. No site was built and no domain was bought. Fig
 
 The niche is real. It is a poor bet as a copy of K5 Learning, and only a conditional bet as a narrow, print-first math site.
 
-What is verified: Semrush’s public pages, last updated 11 November 2026, show October 2026 visits of 4.71M for K5 Learning, 2.86M for Super Teacher Worksheets, and 1.11M for Math-Drills, with many pages per visit. Similarweb’s public pages are lower (about 3.5M, 2.1M, and 810K) and do not show Semrush’s October spike. A worksheet site can reach a premium ad network: superstarworksheets.com serves a Mediavine ads.txt (file marked v20261016) and Semrush shows 1.34M October visits, 1.13M of them organic.
+What is verified: Semrush’s public pages, last updated 11 November 2026, show October 2026 visits of 4.71M for K5 Learning, 2.86M for Super Teacher Worksheets, and 1.11M for Math-Drills. Similarweb’s public pages are lower and do not show that October spike. superstarworksheets.com serves a Mediavine ads.txt (marked v20261016) and Semrush shows 1.34M October visits, 1.13M organic.
 
-What makes this a 5, not a 7: the head terms are already owned, and the long-tail the plan depends on is no longer empty. Web search on 14 November 2026 for “telling time to the quarter hour worksheet grade 2” and “regrouping subtraction worksheets” returned a set of new, same-shaped sites (answer key, grade, standard code, worked example), not the old incumbents. Rank order on Google was not checked live. Display RPM for worksheet pages was not found. Journey by Mediavine lists “excessive use of AI” as an automatic disqualifier. Raptive, below 100,000 pageviews, asks for long-form on most pages.
+What makes this a 5, not a 7: the head terms are already owned. A US Google check that day, personalization off, put K5, Education.com, Math-Drills, Super Teacher, and Common Core Sheets in the top five for the narrow queries, with a printable in every top five. Newer clone domains appeared in a different search tool, not in those Google top fives. An AI Overview was on all 10 queries and only explained the skill. It did not embed a download. Display RPM for worksheet pages was not found. Journey by Mediavine lists “excessive use of AI” as an automatic disqualifier. Raptive, below 100,000 pageviews, asks for long-form on most pages.
 
-The score goes up if a 50-URL test draws impressions on narrow queries within 90 days of indexation and those queries show no AI Overview. It goes down if the URLs are indexed with almost no impressions, or if Google treats the set as scaled content.
+The score goes up if a 50-URL test draws impressions within 90 days of indexation. It goes down if those URLs stay invisible, if Google treats them as scaled content, or if Overviews start including the worksheet. On this check they did not. Google Trends, estimated from the chart, shows an August–September peak, a June–July dip, and holiday terms that spike for one month.
 
 ## The owner’s starting numbers
 
 Semrush, October 2026: K5 4.71M visits, 8.65 pages/visit, 7:38, organic line “3M”; Super Teacher 2.86M and 7.83 pages/visit; Math-Drills 1.11M and 5.19 pages/visit. US+Canada+Australia is 76.4% of K5. US+Canada+UK is 89.1% of Super Teacher and 86.2% of Math-Drills. The “76–89% tier-1” note holds for these three. It does not hold for Twinkl.com (US 58.5%) or Worksheetfun (Similarweb: US 64%).
 
-Do not plan on the October totals. Organic lines were flat or down while total visits jumped 98–152% versus September. Similarweb shows K5 down 1.71% on its October page. Use the two tools as a range.
+Do not plan on the October totals. Organic lines were flat or down while visits jumped 98–152% versus September. Similarweb shows K5 down 1.71%. Use the two tools as a range.
 
 ## Money
 

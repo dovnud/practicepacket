@@ -64,7 +64,7 @@ Holiday phrases are in file 04. They suggest kindergarten through 5th grade as m
 
 ## Narrow clusters worth a test, and why
 
-Chosen because autocomplete shows the phrase, the skill is a Common Core grade 1–3 boundary, and a single page can be made so that every problem really is that skill. Volumes: not found. “Weak SERP” is not claimed. File 02 lists new sites already on these phrases.
+Chosen because autocomplete shows the phrase, the skill is a Common Core grade 1–3 boundary, and a single page can be made so that every problem really is that skill. Volumes: not found. “Weak SERP” is the wrong label. On 14 November 2026 the Google top five for quarter-hour time and for regrouping subtraction were K5, Education.com, Math-Drills, Worksheetfun, Math Worksheets 4 Kids, and Super Teacher (file 05). File 02’s newer domains were not on that page.
 
 Grade 1
 

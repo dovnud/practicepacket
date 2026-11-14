@@ -2,11 +2,25 @@
 
 Date: 14 November 2026.
 
-## What was not retrieved
+## Google Trends, United States, past five years
 
-Google Trends was requested for the United States, five-year window, for worksheets, math worksheets, grade terms, and holiday terms. The public explore API returned HTTP 429 on 14 November 2026. No chart values were read. Any claim of the shape “interest falls to 40 in July and hits 100 in September” would be invented. It is not here.
+Read on 14 November 2026 from the Trends chart. The reader could not read exact axis values on most series. Every number below is ESTIMATED from the shape of the line, on the 0–100 index, not a search volume. The shape is the finding. The numbers are a sketch.
 
-A live Trends screenshot was not available for this write-up.
+| Term | Shape | Estimated index |
+| --- | --- | --- |
+| worksheets | Same cycle every year | August–September about 95–100. June–July about 40–50. December about 40–50. January about 70–75. |
+| math worksheets | Same cycle | August–September about 90–100. June–July about 45–50. January about 65–70. |
+| printable worksheets | Same cycle | August–September about 95–100. June–July about 40–45. January about 70. |
+| math vs reading vs science worksheets | Same months, different height | At the peaks, reading about half to three-fifths of math, science about a fifth to a third of math. |
+| kindergarten vs 1st vs 2nd vs 3rd | Same months | Kindergarten highest. Then 1st about 70–80, 2nd about 50–60, 3rd about 40–50, if kindergarten’s peak is 100. |
+| halloween worksheets | One spike | October about 100. Other months about 0–5. |
+| christmas worksheets | One spike | December about 90–100. November about 30–40. Other months about 0–5. |
+| summer worksheets | Early summer, not July | May–June about 90–100. September through April about 10–20. |
+| staar worksheets | Testing season | March–May about 80–100. June through February about 5–15. |
+
+Rising queries shown for “math worksheets”: “delta math worksheets”, “common core sheets math worksheets”, “dr frost math worksheets”, “first grade math worksheets”, “1st grade math worksheets”. Delta Math and Dr Frost are secondary-school platforms, not printable libraries. The grade phrases are the relevant ones.
+
+This is the seasonality the Semrush October jump could not prove. Interest is high at back-to-school, lower in midsummer, and the holiday terms are almost zero outside their month. A Christmas pack in July will not be found. A Christmas pack in October is early. December is the spike. Summer worksheets are a May–June query, not a July one. STAAR is a spring query and a Texas-only product. It is a later pack, not the test.
 
 ## What the traffic tools show, with the bias named
 
@@ -39,10 +53,10 @@ Google suggestions, US English, 14 November 2026. No volumes.
 
 People add a grade to the holiday. A pack that is only “Christmas math” without a grade is the head. The suggestions say the grade split is how the query is typed. Thanksgiving, Valentine’s Day, and end-of-year were not pulled. Not found.
 
-“summer worksheets” and “test prep worksheets” / “staar worksheets” were not pulled from autocomplete in this pass. Not found. Do not assume a summer cliff or a STAAR spike from this file. The Productive Blogging and third-party RPM pages discuss ad-price seasonality (Q4 up, January down). That is advertiser demand, not parent search demand, and it is not worksheet-specific. See file 06.
+“summer worksheets” and “staar worksheets” were not pulled from autocomplete. Their seasonality is the Trends chart above, estimated. Advertiser-price seasonality (Q4 up, January down) is a different series and is not worksheet-specific. See file 06.
 
 ## Planning consequence
 
 Build the first 200 sheets as evergreen skills. A Christmas pack published in mid-November would mix a seasonal query into the test and make a 90-day read harder. Holiday packs are a phase-2 add, one grade at a time, using the suggestion pattern: kindergarten through 5th, same skill, holiday art that does not break black-and-white printing.
 
-If a Trends chart is pulled later, the only numbers worth saving are the 0–100 index by month for “math worksheets”, “printable worksheets”, and “christmas worksheets”, United States, five years, with the date of the screenshot. Until that exists, seasonality is “autocomplete confirms holiday modifiers; monthly visit spikes in these tools are not clean enough to time a launch.”
+Build evergreen skills first, and time a holiday pack to the month Trends actually moves: October for Halloween, November–December for Christmas, May–June for summer. Do not read the Semrush October visit jump as this curve. The Trends shape and the Semrush October spike are different evidence, and only the Trends shape repeats every year in the five-year chart.

@@ -39,7 +39,7 @@ Roundup used for the comparison table, not as a traffic source: theaileaderboard
 
 ## The clone sites, which matter more than the chatbots
 
-Web search on 14 November 2026 for the two narrow queries in the brief did not return K5, Math-Drills, or Super Teacher in the first results. It returned new domains built on the same template the plan describes: grade, Common Core code, worked example, answer key, PDF, no login.
+A non-Google web search on 14 November 2026 for the two narrow queries returned new domains built on the same template the plan describes: grade, Common Core code, worked example, answer key, PDF, no login. That tool is not Google. On Google itself, the same day, those domains were not in the top five. The top five were the incumbents. See file 05 for the list. The clones are real pages. They had not taken page 1 of this sample.
 
 For “telling time to the quarter hour worksheet grade 2”:
 

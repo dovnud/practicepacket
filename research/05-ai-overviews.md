@@ -2,11 +2,30 @@
 
 Date: 14 November 2026.
 
-## What was not observed
+## What was observed
 
-No live Google results page was opened for the ten worksheet queries in the brief. Whether an AI Overview is present on “telling time to the quarter hour worksheet grade 2”, “regrouping subtraction worksheets”, or “free printable math worksheets” was not checked. Say that plainly: presence on these queries is not found.
+One pass on 14 November 2026, Google results with `hl=en`, `gl=us`, and personalization off (`pws=0`). One screen, one day, one location. Not a panel.
 
-Web search (not Google’s results page) for those two narrow queries returned worksheet URLs, including the clone sites in file 02. It did not return an AI Overview transcript. That is not evidence the Overview is absent.
+An AI Overview was present on all 10 queries. On every one it explained the skill (what regrouping is, what a CVC word is, which topics grade 2 math covers). It did not generate a worksheet, and it did not embed a download or a worksheet link. No featured snippet was present on any of the 10. A printable or PDF was in the organic top five on every query.
+
+People Also Ask, on the same screens, was the teaching question sitting beside the file query: “How to teach telling time to the quarter hour?”, “What is regrouping in subtraction?”, “How to memorize multiplication facts?”. Those are the queries an Overview can finish. The worksheet query still produced a list of printable pages under the Overview.
+
+Ads were present on all 10. Education.com was the advertiser every time. IXL appeared on regrouping subtraction, “free printable math worksheets”, and multiplication facts. ABCmouse appeared on CVC words and kindergarten. Mathseeds appeared on “grade 2 math worksheets printable”.
+
+| Query | First organic result | Also in the top 5 |
+| --- | --- | --- |
+| telling time to the quarter hour worksheet grade 2 | k5learning.com | education.com, mathworksheets4kids.com, math-salamanders.com, superteacherworksheets.com |
+| regrouping subtraction worksheets | math-drills.com | education.com, k5learning.com, worksheetfun.com, mathworksheets4kids.com |
+| 2 digit addition with regrouping worksheets | math-drills.com | k5learning.com, commoncoresheets.com, superteacherworksheets.com, education.com |
+| grade 2 math worksheets printable | k5learning.com | math-salamanders.com, education.com, worksheetfun.com, commoncoresheets.com |
+| free printable math worksheets | math-drills.com | k5learning.com, commoncoresheets.com, education.com, math-aids.com |
+| common core math worksheets grade 3 | commoncoresheets.com | k5learning.com, education.com, math-salamanders.com, superteacherworksheets.com |
+| cvc words worksheets | education.com | k5learning.com, worksheetfun.com, superteacherworksheets.com, teacherspayteachers.com |
+| science worksheets grade 4 | education.com | k5learning.com, teacherspayteachers.com, havefunteaching.com, superteacherworksheets.com |
+| multiplication facts worksheets | math-drills.com | superteacherworksheets.com, k5learning.com, commoncoresheets.com, math-aids.com |
+| printable worksheets for kindergarten | education.com | k5learning.com, worksheetfun.com, kidzone.ws, superteacherworksheets.com |
+
+The clone domains in file 02 (endlessmathsheets.com, mathprintable.com, and the others) were not in these top fives. They were returned by a different search tool. They are real pages. They were not page 1 of Google on this pass.
 
 ## What general studies say
 
@@ -29,6 +48,10 @@ Mechanism, not a measurement:
 - The clone pages already put a worked example and the answers in the HTML. An Overview can lift that block and remove the reason to click. Putting the full answer key only in the PDF, and keeping a single worked example in the HTML, gives the Overview less to steal and still gives the teacher the file. K5 already holds full keys back for members. A free site can put one example on the page and the rest of the key in the PDF.
 - Download itself is not a moat if the HTML includes every problem, because the user, or the Overview, can copy them. The PDF has to be the clean print, and the HTML has to be enough to judge the sheet.
 
-## What to log during the test
+## What this does to the moat
 
-For each of the 50 test URLs’ main query, once, from a US window with personalization off: Overview yes or no, and whether the Overview embeds a worksheet, explains the skill, or links out. Record the date. One check is one sample. The arXiv abstract’s point is that Overview presence is uneven. Do not generalize from ten queries to the whole niche, and do not skip the check either. The 5/10 score moves if those ten queries are clean of Overviews, or if they are Overview-first and the links under them are the clone sites.
+On this pass the Overview did not replace the file. The organic list under it was still the printable. That is the useful half of the moat, observed once, not measured as a click-through rate. The studies above say that when an Overview is present, outbound clicks fall. These 10 queries had Overviews. A lower click rate on an otherwise winnable query is the remaining risk, and it was not measured here.
+
+The pages that rank are the incumbents, including on the two narrow queries the test cares about. “Weak SERP” is the wrong description of this sample. A new URL has to pass K5, Math-Drills, Education.com, Super Teacher, and Common Core Sheets, not a set of unlinked clones.
+
+Log the same 10 queries again when the test pages exist. Record whether the Overview still stops at an explanation. If it starts embedding a worksheet or a generated problem set, the file moat is weaker than it was on 14 November 2026.

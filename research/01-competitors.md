@@ -150,6 +150,12 @@ Sitemap counts are URL `<loc>` counts downloaded that day. They include non-work
 - wayground.com: 29.35M visits on TPT’s competitor module. Not a worksheet site. Included so it is not mistaken for one.
 - Newer long-tail domains returned by web search on 14 November 2026, rank not verified: endlessmathsheets.com, mathprintable.com, printandfridge.com, mathdrillpages.com, pencilgo.com, math-pages.com, mathpracticeonline.com, animalmath.com, mathminute.com. They already use the planned page shape. See file 03.
 
+## Who was on page 1, 14 November 2026
+
+A Google results check that day (United States, personalization off) is in file 05. Across 10 worksheet queries, the domains that repeated in the top five were K5, Education.com, Math-Drills, Super Teacher, Common Core Sheets, Worksheetfun, and Math Worksheets 4 Kids. Math Salamanders (math-salamanders.com) was in the top five for quarter-hour time, grade 2 math, and grade 3 Common Core. Its traffic was not fetched. Have Fun Teaching and Kidzone.ws appeared once each. Teachers Pay Teachers appeared for CVC words and grade 4 science. Education.com had a paid ad on all 10 queries.
+
+A Similarweb screen the same day showed K5 at bounce 29.84%, 8.64 pages/visit, duration 4:33, last-month change −1.71%, which matches the October page already cited. The visits figure on that screen was 3.5M, and the label was a chart rather than a clear “last month” heading. Super Teacher on that screen: 1.9M under the label “Total Visits Last 3 Months”, bounce 26.68%, 7.30 pages/visit, duration 4:00, last-month change −5.63%, United States 76.07%. The rank widgets for the two sites were identical (#19,420 global, #5,098 US, #177 category), which is not credible as two independent ranks, so those ranks are not used. The other nine Similarweb pages hit a free-tier search limit and were not read.
+
 ## What the set does badly
 
 Verified from the pages above, not from a survey of teachers:
