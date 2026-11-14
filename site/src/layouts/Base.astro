@@ -9,8 +9,9 @@ interface Props {
   path: string
   jsonld?: Record<string, unknown> | Record<string, unknown>[]
   batch?: number
+  noindex?: boolean
 }
-const { title, description, path, jsonld, batch } = Astro.props
+const { title, description, path, jsonld, batch, noindex = false } = Astro.props
 const canonical = new URL(path, Astro.site).href
 const blocks = jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : []
 ---
@@ -21,11 +22,11 @@ const blocks = jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : []
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    {!noindex && <meta property="og:url" content={canonical} />}
     <meta property="og:type" content="website" />
     {batch && <meta name="publish-batch" content={String(batch)} />}
     {blocks.map((block) => (
