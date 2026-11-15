@@ -1,0 +1,65 @@
+---
+import Base from '../../../../layouts/Base.astro'
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro'
+import { breadcrumbLd } from '../../../../lib/catalog.ts'
+import {
+  GRADE_LABEL,
+  SUBJECT_LABEL,
+  gradesWithSkills,
+  skillPath,
+  skillsFor,
+  subjectsFor,
+  topicsFor,
+  type GradeId,
+  type SubjectId,
+} from '../../../../lib/skills.ts'
+
+export function getStaticPaths() {
+  const paths = []
+  for (const grade of gradesWithSkills()) {
+    for (const subject of subjectsFor(grade)) {
+      for (const topic of topicsFor(grade, subject)) {
+        paths.push({
+          params: { grade, subject, topic: topic.topic },
+          props: { grade, subject, label: topic.label },
+        })
+      }
+    }
+  }
+  return paths
+}
+interface Props { grade: GradeId; subject: SubjectId; label: string }
+const { grade, subject, label } = Astro.props
+const topic = Astro.params.topic || ''
+const skills = skillsFor(grade, subject, topic)
+const path = `/grade-${grade}/${subject}/${topic}/`
+const title = `${GRADE_LABEL[grade]} ${label} | Practice Packet`
+const description = `${GRADE_LABEL[grade]} ${label.toLowerCase()} worksheets with three levels and answer keys.`
+const tone: Record<string, string> = { k: 'var(--gk)', '1': 'var(--g1)', '2': 'var(--g2)', '3': 'var(--g3)', '4': 'var(--g4)', '5': 'var(--g5)' }
+---
+<Base title={title} description={description} path={path} jsonld={breadcrumbLd([
+  { name: 'Home', path: '/' },
+  { name: GRADE_LABEL[grade], path: `/grade-${grade}/` },
+  { name: SUBJECT_LABEL[subject], path: `/grade-${grade}/${subject}/` },
+  { name: label, path },
+])}>
+  <Breadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: GRADE_LABEL[grade], href: `/grade-${grade}/` },
+    { label: SUBJECT_LABEL[subject], href: `/grade-${grade}/${subject}/` },
+    { label },
+  ]} />
+  <div class="page-intro">
+    <h1>{label}</h1>
+    <p class="lede">{GRADE_LABEL[grade]}. Open a skill for the printable, the worked example, and the answer key.</p>
+  </div>
+  <div class="cards">
+    {skills.map((skill) => (
+      <a class="card" href={skillPath(skill)} style={`--grade:${tone[grade]}`}>
+        <span class="chip">{grade === 'k' ? 'K' : grade}</span>
+        <h2>{skill.title}</h2>
+        <p>Easy, medium, and hard</p>
+      </a>
+    ))}
+  </div>
+</Base>

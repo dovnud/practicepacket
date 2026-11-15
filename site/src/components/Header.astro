@@ -1,0 +1,29 @@
+---
+import Logo from './Logo.astro'
+import { GRADE_LABEL, gradesWithSkills } from '../lib/skills.ts'
+import { liveSeasons } from '../lib/catalog.ts'
+const grades = gradesWithSkills()
+const seasons = liveSeasons()
+---
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="/">
+      <Logo />
+    </a>
+    <input id="nav-toggle" class="nav-toggle" type="checkbox" />
+    <label class="nav-burger" for="nav-toggle">
+      <span class="sr">Open menu</span>
+      <span></span><span></span><span></span>
+    </label>
+    <nav aria-label="Primary">
+      <ul>
+        {grades.map((g) => (
+          <li><a href={`/grade-${g}/`}>{GRADE_LABEL[g]}</a></li>
+        ))}
+        {seasons.length > 0 && <li><a href="/seasons/">Seasons</a></li>}
+        <li><a href="/standards/">Standards</a></li>
+        <li><a href="/about/">About</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>

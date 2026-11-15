@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro'
+import { GRADE_LABEL, gradesWithSkills } from '../lib/skills.ts'
+
+const grades = gradesWithSkills()
+const description = 'That address is not a Practice Packet page. Choose a grade to find a worksheet.'
+---
+<Base title="Page not found | Practice Packet" description={description} path="/404/" noindex>
+  <h1>That page is not here</h1>
+  <p class="lede">The address does not match a worksheet on Practice Packet. Pick a grade, or go back to the home page.</p>
+  <p><a class="button" href="/">Home</a></p>
+  <div class="cards">
+    {grades.map((grade) => (
+      <a class="card" href={`/grade-${grade}/`}>
+        <span class="chip">{grade === 'k' ? 'K' : grade}</span>
+        <h2>{GRADE_LABEL[grade]}</h2>
+        <p>Math worksheets</p>
+      </a>
+    ))}
+  </div>
+</Base>

@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import { breadcrumbLd, liveSeasons } from '../../lib/catalog.ts'
+import { GRADE_LABEL, skillPath } from '../../lib/skills.ts'
+
+export function getStaticPaths() {
+  return liveSeasons().map((season) => ({ params: { season: season.slug }, props: { slug: season.slug } }))
+}
+interface Props { slug: string }
+const season = liveSeasons().find((item) => item.slug === Astro.props.slug)
+if (!season) throw new Error('missing season')
+const path = `/seasons/${season.slug}/`
+---
+<Base title={`${season.title} | Practice Packet`} description={season.description} path={path} jsonld={breadcrumbLd([
+  { name: 'Home', path: '/' },
+  { name: 'Seasons', path: '/seasons/' },
+  { name: season.title, path },
+])}>
+  <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Seasons', href: '/seasons/' }, { label: season.title }]} />
+  <div class="page-intro">
+    <h1>{season.title}</h1>
+    <p class="lede">{season.plan}</p>
+  </div>
+  <div class="cards">
+    {season.skills.map((skill) => (
+      <a class="card" href={skillPath(skill)}>
+        <h2>{skill.title}</h2>
+        <p>{GRADE_LABEL[skill.grade]}. Medium level is the default PDF.</p>
+      </a>
+    ))}
+  </div>
+</Base>

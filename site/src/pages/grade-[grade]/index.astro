@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro'
+import Breadcrumbs from '../../components/Breadcrumbs.astro'
+import { breadcrumbLd } from '../../lib/catalog.ts'
+import { GRADE_LABEL, SUBJECT_LABEL, gradesWithSkills, publishedSkills, subjectsFor, type GradeId, type SubjectId } from '../../lib/skills.ts'
+
+export function getStaticPaths() {
+  return gradesWithSkills().map((grade) => ({ params: { grade }, props: { grade } }))
+}
+interface Props { grade: GradeId }
+const { grade } = Astro.props
+const subjects = subjectsFor(grade)
+const path = `/grade-${grade}/`
+const title = `${GRADE_LABEL[grade]} worksheets | Practice Packet`
+const description = `Printable ${GRADE_LABEL[grade]} math worksheets, one skill per page, with answer keys.`
+const tone: Record<string, string> = { k: 'var(--gk)', '1': 'var(--g1)', '2': 'var(--g2)', '3': 'var(--g3)', '4': 'var(--g4)', '5': 'var(--g5)' }
+---
+<Base title={title} description={description} path={path} jsonld={breadcrumbLd([{ name: 'Home', path: '/' }, { name: GRADE_LABEL[grade], path }])}>
+  <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: GRADE_LABEL[grade] }]} />
+  <div class="page-intro">
+    <h1>{GRADE_LABEL[grade]}</h1>
+    <p class="lede">Pick a subject. Only subjects with finished pages are listed.</p>
+  </div>
+  <div class="cards">
+    {subjects.map((subject) => {
+      const count = publishedSkills().filter((s) => s.grade === grade && s.subject === subject).length
+      return (
+        <a class="card" href={`${path}${subject}/`} style={`--grade:${tone[grade]}`}>
+          <span class="chip">{grade === 'k' ? 'K' : grade}</span>
+          <h2>{SUBJECT_LABEL[subject as SubjectId]}</h2>
+          <p>{count} skills</p>
+        </a>
+      )
+    })}
+  </div>
+</Base>

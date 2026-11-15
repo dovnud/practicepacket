@@ -1,0 +1,162 @@
+---
+import Base from '../../../../layouts/Base.astro'
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro'
+import AdSlot from '../../../../components/AdSlot.astro'
+import { breadcrumbLd } from '../../../../lib/catalog.ts'
+import { sheet } from '../../../../lib/generate.ts'
+import { renderAnswers, renderSheet } from '../../../../lib/render.ts'
+import {
+  GRADE_LABEL,
+  LEVELS,
+  byId,
+  pdfHref,
+  publishedSkills,
+  skillPath,
+  type Skill,
+} from '../../../../lib/skills.ts'
+
+export function getStaticPaths() {
+  return publishedSkills().map((skill) => ({
+    params: {
+      grade: skill.grade,
+      subject: skill.subject,
+      topic: skill.topic,
+      skill: skill.slug,
+    },
+    props: { skill },
+  }))
+}
+
+interface Props { skill: Skill }
+const { skill } = Astro.props
+const path = skillPath(skill)
+const title = `${skill.title}, ${GRADE_LABEL[skill.grade]} | Practice Packet`
+const sheets = Object.fromEntries(LEVELS.map((level) => [level, sheet(skill, level, 0)]))
+const visibleRelated = skill.related
+  .map((id) => byId(id))
+  .filter((s): s is Skill => !!s && publishedSkills().some((p) => p.id === s.id))
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: GRADE_LABEL[skill.grade], href: `/grade-${skill.grade}/` },
+  { label: 'Math', href: `/grade-${skill.grade}/math/` },
+  { label: skill.topicLabel, href: `/grade-${skill.grade}/math/${skill.topic}/` },
+  { label: skill.title },
+]
+const ld = [
+  breadcrumbLd([
+    { name: 'Home', path: '/' },
+    { name: GRADE_LABEL[skill.grade], path: `/grade-${skill.grade}/` },
+    { name: 'Math', path: `/grade-${skill.grade}/math/` },
+    { name: skill.topicLabel, path: `/grade-${skill.grade}/math/${skill.topic}/` },
+    { name: skill.title, path },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'LearningResource',
+    name: skill.title,
+    description: skill.description,
+    learningResourceType: 'Worksheet',
+    educationalLevel: GRADE_LABEL[skill.grade],
+    teaches: skill.standard.summary,
+    isAccessibleForFree: true,
+    inLanguage: 'en',
+    publisher: { '@type': 'Organization', name: 'Practice Packet', url: 'https://practicepacket.com' },
+  },
+]
+const payload = JSON.stringify({ id: skill.id, spec: skill.spec }).replaceAll('<', '\\u003c')
+---
+<Base title={title} description={skill.description} path={path} jsonld={ld} batch={skill.batch}>
+  <Breadcrumbs items={crumbs} />
+  <div class="skill-top">
+    <p class="standard">Common Core {skill.standard.code}</p>
+    <h1>{skill.title}</h1>
+    <p class="lede">{skill.explanation}</p>
+    <section class="example">
+      <h2>One worked example</h2>
+      <p>{skill.example.story}</p>
+      <ol>
+        {skill.example.steps.map((step) => <li>{step}</li>)}
+      </ol>
+      <p class="answer-pill">Answer: {skill.example.answer}</p>
+    </section>
+    <p class="note">{skill.standard.summary}</p>
+  </div>
+  <input class="tab-input" type="radio" name="level" id="tab-easy" />
+  <input class="tab-input" type="radio" name="level" id="tab-medium" checked />
+  <input class="tab-input" type="radio" name="level" id="tab-hard" />
+  <div class="seg no-print">
+    <label for="tab-easy">Easy</label>
+    <label for="tab-medium">Medium</label>
+    <label for="tab-hard">Hard</label>
+  </div>
+  {LEVELS.map((level) => (
+    <section class="level" id={level} data-level={level}>
+      <p>{skill.direction}</p>
+      <div class="actions no-print">
+        <a class="button" href={pdfHref(skill, level)}>Download PDF</a>
+        <button type="button" class="secondary" data-regen data-level={level}>New numbers</button>
+        <button type="button" class="secondary" data-print data-level={level}>Print this level</button>
+      </div>
+      <AdSlot />
+      <div class="paper">
+        <div class="sheet" data-sheet={level} set:html={renderSheet(sheets[level])} />
+      </div>
+      <details class="key">
+        <summary class="as-button">Answer key</summary>
+        <div class="key-panel" data-key={level} set:html={renderAnswers(sheets[level])} />
+      </details>
+    </section>
+  ))}
+  {visibleRelated.length > 0 && (
+    <section class="section">
+      <h2>Related skills</h2>
+      <div class="cards">
+        {visibleRelated.map((item) => (
+          <a class="card" href={skillPath(item)}>
+            <h3>{item.title}</h3>
+            <p>{GRADE_LABEL[item.grade]}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+  <script id="skill-spec" type="application/json" set:html={payload} />
+  <p class="note no-print">The new-numbers button needs JavaScript. The downloaded PDF stays the original set, so a link you share does not change.</p>
+</Base>
+<script>
+  import { makeProblems } from '../../../../lib/generate.ts'
+  import { renderAnswers, renderSheet } from '../../../../lib/render.ts'
+  import type { Level, Spec } from '../../../../lib/types.ts'
+
+  const raw = document.getElementById('skill-spec')?.textContent
+  if (raw) {
+    const data = JSON.parse(raw) as { id: string; spec: Spec }
+    const counts: Record<Level, number> = { easy: 1, medium: 1, hard: 1 }
+    document.querySelectorAll<HTMLButtonElement>('[data-regen]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const level = button.dataset.level as Level
+        const problems = makeProblems(data.spec, level, hash(`${data.id}:${level}:${counts[level]++}`))
+        const sheet = document.querySelector<HTMLElement>(`[data-sheet="${level}"]`)
+        const key = document.querySelector<HTMLElement>(`[data-key="${level}"]`)
+        if (sheet) sheet.innerHTML = renderSheet(problems)
+        if (key) key.innerHTML = renderAnswers(problems)
+      })
+    })
+    document.querySelectorAll<HTMLButtonElement>('[data-print]').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.body.dataset.printLevel = button.dataset.level || ''
+        window.print()
+        delete document.body.dataset.printLevel
+      })
+    })
+  }
+
+  function hash(text: string): number {
+    let h = 2166136261
+    for (let i = 0; i < text.length; i++) {
+      h ^= text.charCodeAt(i)
+      h = Math.imul(h, 16777619)
+    }
+    return h >>> 0
+  }
+</script>

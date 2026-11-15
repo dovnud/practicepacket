@@ -1,0 +1,111 @@
+---
+import Base from '../layouts/Base.astro'
+import { GRADE_LABEL, gradesWithSkills, skillPath, publishedSkills } from '../lib/skills.ts'
+import { liveSeasons } from '../lib/catalog.ts'
+const grades = gradesWithSkills()
+const skills = publishedSkills()
+const seasons = liveSeasons()
+const description = 'Free printable math worksheets for kindergarten through grade 5. One skill per page, three levels, and an answer key. No login.'
+const tone: Record<string, string> = { k: 'var(--gk)', '1': 'var(--g1)', '2': 'var(--g2)', '3': 'var(--g3)', '4': 'var(--g4)', '5': 'var(--g5)' }
+---
+<Base title="Practice Packet | Free printable math worksheets" description={description} path="/">
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Free to print. No login.</p>
+      <h1>One skill. One clean page.</h1>
+      <p class="lede">Practice Packet is a free set of printable math pages for kindergarten through grade 5. Each page is a single skill, with an easy, medium, and hard set, a worked example, and an answer key made from the same problems.</p>
+      <div class="picker" aria-label="Choose a grade">
+        {grades.map((grade) => (
+          <a href={`/grade-${grade}/`} style={`--grade:${tone[grade]}`}>{GRADE_LABEL[grade]}</a>
+        ))}
+      </div>
+    </div>
+    <div class="mock" aria-hidden="true">
+      <svg viewBox="0 0 360 280" role="img">
+        <rect x="48" y="18" width="250" height="244" rx="16" fill="#fff" stroke="#e2e8f0"/>
+        <rect x="68" y="38" width="86" height="12" rx="6" fill="#1e40af"/>
+        <rect x="68" y="58" width="150" height="8" rx="4" fill="#e2e8f0"/>
+        <rect x="68" y="88" width="96" height="70" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+        <text x="92" y="118" font-family="Nunito, sans-serif" font-size="22" font-weight="800" fill="#0f172a">38</text>
+        <text x="78" y="142" font-family="Nunito, sans-serif" font-size="22" font-weight="800" fill="#0f172a">+ 27</text>
+        <line x1="78" y1="150" x2="150" y2="150" stroke="#0f172a" stroke-width="2"/>
+        <rect x="176" y="88" width="96" height="70" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+        <circle cx="224" cy="122" r="24" fill="none" stroke="#0f172a" stroke-width="2"/>
+        <line x1="224" y1="122" x2="224" y2="106" stroke="#0f172a" stroke-width="2"/>
+        <line x1="224" y1="122" x2="238" y2="122" stroke="#1e40af" stroke-width="2"/>
+        <rect x="68" y="176" width="204" height="10" rx="5" fill="#fef3c7"/>
+        <rect x="68" y="196" width="160" height="10" rx="5" fill="#e2e8f0"/>
+        <rect x="68" y="220" width="92" height="22" rx="8" fill="#1e40af"/>
+      </svg>
+    </div>
+  </section>
+  <section class="trust" aria-label="What every page includes">
+    <div>Free<span>No account, no paywall</span></div>
+    <div>Answer keys<span>Generated with the problems</span></div>
+    <div>Common Core<span>Code on the page, our own words</span></div>
+    <div>Print-ready PDF<span>Black ink, one skill</span></div>
+  </section>
+  <section class="section">
+    <div class="section-head"><h2>Grades</h2></div>
+    <div class="cards">
+      {grades.map((grade) => (
+        <a class="card" href={`/grade-${grade}/`} style={`--grade:${tone[grade]}`}>
+          <span class="chip">{grade === 'k' ? 'K' : grade}</span>
+          <h3>{GRADE_LABEL[grade]}</h3>
+          <p>{skills.filter((s) => s.grade === grade).length} math skills</p>
+        </a>
+      ))}
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-head">
+      <h2>Popular worksheets</h2>
+    </div>
+    <form class="search" role="search" onsubmit="return false">
+      <label class="sr" for="find">Find a worksheet</label>
+      <input id="find" type="search" placeholder="Find a worksheet" autocomplete="off" />
+    </form>
+    <div class="cards" id="sheet-list">
+      {skills.map((skill) => (
+        <a class="card" data-find={skill.title.toLowerCase()} href={skillPath(skill)} style={`--grade:${tone[skill.grade]}`}>
+          <span class="chip">{skill.grade === 'k' ? 'K' : skill.grade}</span>
+          <h3>{skill.title}</h3>
+          <p>{GRADE_LABEL[skill.grade]} · {skill.topicLabel}</p>
+        </a>
+      ))}
+    </div>
+    <p class="note" id="find-empty" hidden>No worksheet in this release uses that name.</p>
+  </section>
+  {seasons.length > 0 && (
+    <section class="section">
+      <div class="section-head">
+        <h2>Seasonal packets</h2>
+        <a href="/seasons/">See all</a>
+      </div>
+      <p class="lede">The same skills, grouped for a short week of the school year.</p>
+      <div class="cards">
+        {seasons.map((season) => (
+          <a class="card" href={`/seasons/${season.slug}/`}>
+            <h3>{season.title}</h3>
+            <p>{season.skills.length} skills</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</Base>
+<script>
+  const input = document.querySelector<HTMLInputElement>('#find')
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-find]')]
+  const empty = document.querySelector<HTMLElement>('#find-empty')
+  input?.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase()
+    let shown = 0
+    for (const card of cards) {
+      const ok = card.dataset.find?.includes(q) ?? true
+      card.hidden = !ok
+      if (ok) shown++
+    }
+    if (empty) empty.hidden = shown !== 0
+  })
+</script>
