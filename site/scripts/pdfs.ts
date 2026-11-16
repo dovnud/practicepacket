@@ -53,6 +53,22 @@ function drawPage(doc: PDFKit.PDFDocument, title: string, direction: string, pro
     doc.text('Name ___________________________    Date ______________')
   }
   doc.moveDown(0.6)
+  const long = problems.some((p) => p.display.kind === 'passage' || p.display.kind === 'trace' || (p.display.kind === 'line' && p.display.text.length > 90))
+  if (long) {
+    problems.forEach((problem, index) => {
+      if (doc.y > 700) doc.addPage()
+      const y = doc.y
+      doc.font('Helvetica').fontSize(12).text(`${index + 1}.`, 48, y, { lineBreak: false })
+      if (key) {
+        doc.font('Helvetica-Bold').text(problem.answer, 70, y, { width: 494 })
+        doc.moveDown(0.8)
+        return
+      }
+      drawProblem(doc, problem, 70, y, 494)
+      doc.moveDown(1)
+    })
+    return
+  }
   const startY = doc.y
   const colW = 250
   problems.forEach((problem, index) => {
@@ -106,6 +122,18 @@ function drawProblem(doc: PDFKit.PDFDocument, problem: Problem, x: number, y: nu
   }
   if (d.kind === 'compare') {
     doc.text(`${d.left}    _____    ${d.right}`, x, y, { width })
+    return
+  }
+  if (d.kind === 'passage') {
+    doc.fontSize(11).text(d.text, x, y, { width })
+    doc.moveDown(0.35)
+    doc.fontSize(12).text(d.question, { width })
+    return
+  }
+  if (d.kind === 'trace') {
+    doc.fontSize(d.script === 'cursive' ? 28 : 32).text(d.letter, x, y)
+    doc.fontSize(10).text(problem.prompt, x, y + 36, { width })
+    doc.moveTo(x, y + 58).lineTo(x + 180, y + 58).stroke()
     return
   }
   doc.text(d.kind === 'line' ? d.text : problem.prompt, x, y, { width })

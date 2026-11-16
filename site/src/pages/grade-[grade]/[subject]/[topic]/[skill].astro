@@ -7,6 +7,7 @@ import { sheet } from '../../../../lib/generate.ts'
 import { renderAnswers, renderSheet } from '../../../../lib/render.ts'
 import {
   GRADE_LABEL,
+  SUBJECT_LABEL,
   LEVELS,
   byId,
   pdfHref,
@@ -38,16 +39,16 @@ const visibleRelated = skill.related
 const crumbs = [
   { label: 'Home', href: '/' },
   { label: GRADE_LABEL[skill.grade], href: `/grade-${skill.grade}/` },
-  { label: 'Math', href: `/grade-${skill.grade}/math/` },
-  { label: skill.topicLabel, href: `/grade-${skill.grade}/math/${skill.topic}/` },
+  { label: SUBJECT_LABEL[skill.subject], href: `/grade-${skill.grade}/${skill.subject}/` },
+  { label: skill.topicLabel, href: `/grade-${skill.grade}/${skill.subject}/${skill.topic}/` },
   { label: skill.title },
 ]
 const ld = [
   breadcrumbLd([
     { name: 'Home', path: '/' },
     { name: GRADE_LABEL[skill.grade], path: `/grade-${skill.grade}/` },
-    { name: 'Math', path: `/grade-${skill.grade}/math/` },
-    { name: skill.topicLabel, path: `/grade-${skill.grade}/math/${skill.topic}/` },
+    { name: SUBJECT_LABEL[skill.subject], path: `/grade-${skill.grade}/${skill.subject}/` },
+    { name: skill.topicLabel, path: `/grade-${skill.grade}/${skill.subject}/${skill.topic}/` },
     { name: skill.title, path },
   ]),
   {

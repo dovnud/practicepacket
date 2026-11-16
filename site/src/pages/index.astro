@@ -1,13 +1,14 @@
 ---
 import Base from '../layouts/Base.astro'
-import { GRADE_LABEL, gradesWithSkills, skillPath, publishedSkills, releasedGradeRange } from '../lib/skills.ts'
+import { GRADE_LABEL, GRADE_TONE, gradesWithSkills, gradeSkillCountLabel, skillPath, publishedSkills, releasedGradeRange, releasedSubjectPhrase } from '../lib/skills.ts'
 import { liveSeasons } from '../lib/catalog.ts'
 const grades = gradesWithSkills()
 const skills = publishedSkills()
 const seasons = liveSeasons()
 const range = releasedGradeRange()
-const description = `Free printable math worksheets for ${range}. One skill per page, three levels, and an answer key. No login.`
-const tone: Record<string, string> = { k: 'var(--gk)', '1': 'var(--g1)', '2': 'var(--g2)', '3': 'var(--g3)', '4': 'var(--g4)', '5': 'var(--g5)' }
+const subjects = releasedSubjectPhrase()
+const description = `Free printable ${subjects} worksheets for ${range}. One skill per page, three levels, and an answer key. No login.`
+const tone = GRADE_TONE
 const siteLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -17,12 +18,12 @@ const siteLd = {
   publisher: { '@type': 'Organization', name: 'Practice Packet', url: 'https://practicepacket.com' },
 }
 ---
-<Base title="Practice Packet | Free printable math worksheets" description={description} path="/" jsonld={siteLd}>
+<Base title={`Practice Packet | Free printable ${subjects} worksheets`} description={description} path="/" jsonld={siteLd}>
   <section class="hero">
     <div class="hero-copy">
       <p class="eyebrow">Free to print. No login.</p>
       <h1>One skill. One clean page.</h1>
-      <p class="lede">Practice Packet is a free set of printable math pages for {range}. Each page is a single skill, with an easy, medium, and hard set, a worked example, and an answer key made from the same problems.</p>
+      <p class="lede">Practice Packet is a free set of printable {subjects} pages for {range}. Each page is a single skill, with an easy, medium, and hard set, a worked example, and an answer key made from the same problems.</p>
       <div class="picker" aria-label="Choose a grade">
         {grades.map((grade) => (
           <a href={`/grade-${grade}/`} style={`--grade:${tone[grade]}`}>{GRADE_LABEL[grade]}</a>
@@ -61,7 +62,7 @@ const siteLd = {
         <a class="card" href={`/grade-${grade}/`} style={`--grade:${tone[grade]}`}>
           <span class="chip">{grade === 'k' ? 'K' : grade}</span>
           <h3>{GRADE_LABEL[grade]}</h3>
-          <p>{skills.filter((s) => s.grade === grade).length} math skills</p>
+          <p>{gradeSkillCountLabel(grade)}</p>
         </a>
       ))}
     </div>

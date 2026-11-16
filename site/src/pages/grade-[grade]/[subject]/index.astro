@@ -2,7 +2,7 @@
 import Base from '../../../layouts/Base.astro'
 import Breadcrumbs from '../../../components/Breadcrumbs.astro'
 import { breadcrumbLd } from '../../../lib/catalog.ts'
-import { GRADE_LABEL, SUBJECT_LABEL, gradesWithSkills, skillsFor, subjectsFor, topicsFor, type GradeId, type SubjectId } from '../../../lib/skills.ts'
+import { GRADE_LABEL, GRADE_TONE, SUBJECT_LABEL, gradesWithSkills, skillsFor, subjectsFor, topicsFor, type GradeId, type SubjectId } from '../../../lib/skills.ts'
 
 export function getStaticPaths() {
   const paths = []
@@ -22,7 +22,7 @@ const topics = topicsFor(grade, subject).map((topic) => ({
 const path = `/grade-${grade}/${subject}/`
 const title = `${GRADE_LABEL[grade]} ${SUBJECT_LABEL[subject]} | Practice Packet`
 const description = `${GRADE_LABEL[grade]} ${SUBJECT_LABEL[subject].toLowerCase()} topics, each linking to a single-skill worksheet.`
-const tone: Record<string, string> = { k: 'var(--gk)', '1': 'var(--g1)', '2': 'var(--g2)', '3': 'var(--g3)', '4': 'var(--g4)', '5': 'var(--g5)' }
+const tone = GRADE_TONE
 ---
 <Base title={title} description={description} path={path} jsonld={breadcrumbLd([
   { name: 'Home', path: '/' },

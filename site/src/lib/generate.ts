@@ -1,6 +1,8 @@
 import { Rng, hashSeed } from './rng.ts'
 import { frac, problem } from './solve.ts'
 import type { Level, Problem, Skill, Spec } from './types.ts'
+import { comprehensionSheet, extraProblem } from './generate-extra.ts'
+import { PASSAGES } from './ela-data.ts'
 
 const NAMES = ['Sam', 'Mia', 'Leo', 'Ava', 'Noah', 'Priya', 'Owen', 'Lila', 'Jules', 'Noor']
 const SHAPES: { name: string; sides: number }[] = [
@@ -12,8 +14,9 @@ const SHAPES: { name: string; sides: number }[] = [
 ]
 
 function countFor(level: Level, spec: Spec): number {
-  const wide = spec.kind === 'clock' || spec.kind === 'frac-bar' || spec.kind === 'frac-line' || spec.kind === 'angle' || spec.kind === 'coord' || spec.kind === 'graph' || spec.kind === 'two-step' || spec.kind === 'measure'
+  const wide = spec.kind === 'clock' || spec.kind === 'frac-bar' || spec.kind === 'frac-line' || spec.kind === 'angle' || spec.kind === 'coord' || spec.kind === 'graph' || spec.kind === 'two-step' || spec.kind === 'measure' || spec.kind === 'comprehension' || spec.kind === 'cap-punct'
   let n = wide ? (level === 'easy' ? 4 : level === 'medium' ? 6 : 8) : level === 'easy' ? 6 : level === 'medium' ? 9 : 12
+  if (spec.kind === 'comprehension') n = Math.min(n, PASSAGES[spec.band].length)
   if (spec.kind === 'dots') n = Math.min(n, spec.max)
   if (spec.kind === 'sides' || spec.kind === 'shape-name') n = Math.min(n, 6)
   if (spec.kind === 'angle') n = Math.min(n, 7)
@@ -31,6 +34,7 @@ function loosen(level: Level): number {
 export function makeProblems(spec: Spec, level: Level, seed: number): Problem[] {
   const rng = new Rng(seed)
   const n = countFor(level, spec)
+  if (spec.kind === 'comprehension') return comprehensionSheet(spec, level, rng, n)
   const out: Problem[] = []
   const seen = new Set<string>()
   let guard = 0
@@ -169,8 +173,11 @@ function one(spec: Spec, level: Level, rng: Rng): Problem {
       return decDiv(level, rng)
     case 'pow10-dec':
       return pow10dec(level, rng)
-    default:
+    default: {
+      const extra = extraProblem(spec, level, rng)
+      if (extra) return extra
       throw new Error('unknown spec')
+    }
   }
 }
 

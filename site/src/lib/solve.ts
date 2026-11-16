@@ -149,7 +149,92 @@ export function solve(proof: Proof): string {
       const scale = 10 ** proof.pow
       return trimNum(proof.op === 'mul' ? proof.n * scale : proof.n / scale)
     }
+    case 'fracDivF':
+      return frac(proof.n1 * proof.d2, proof.d1 * proof.n2)
+    case 'eq': {
+      const { form, a, b, c, d = 0 } = proof
+      let x: number
+      if (form === 'x+b=c') x = c - b
+      else if (form === 'x-b=c') x = c + b
+      else if (form === 'bx=c') x = c / b
+      else if (form === 'x/b=c') x = b * c
+      else if (form === 'ax+b=c') x = (c - b) / a
+      else x = (d - b) / (a - c)
+      return `x = ${fmtEq(x)}`
+    }
+    case 'ineq': {
+      // a > 0: ax + b ? c  =>  x ? (c-b)/a
+      const x = (proof.c - proof.b) / proof.a
+      return `x ${proof.cmp} ${fmtEq(x)}`
+    }
+    case 'pythag':
+      return proof.find === 'c'
+        ? String(Math.round(Math.sqrt(proof.a * proof.a + proof.b * proof.b)))
+        : String(Math.round(Math.sqrt(proof.a * proof.a - proof.b * proof.b)))
+    case 'slope': {
+      let dy = proof.y2 - proof.y1
+      let dx = proof.x2 - proof.x1
+      if (dx === 0) return 'undefined'
+      if (dy === 0) return '0'
+      if (dx < 0) {
+        dy = -dy
+        dx = -dx
+      }
+      if (dx === 1) return String(dy)
+      return frac(dy, dx)
+    }
+    case 'sciTo':
+      return toSci(proof.n)
+    case 'sciFrom':
+      return trimNum(proof.coef * 10 ** proof.exp)
+    case 'exp':
+      return String(proof.base ** proof.pow)
+    case 'areaTri':
+      return trimNum((proof.b * proof.h) / 2)
+    case 'areaTrap':
+      return trimNum(((proof.b1 + proof.b2) * proof.h) / 2)
+    case 'prism':
+      return String(proof.base * proof.h)
+    case 'mean':
+      return trimNum(proof.ns.reduce((s, n) => s + n, 0) / proof.ns.length)
+    case 'median': {
+      const s = [...proof.ns].sort((a, b) => a - b)
+      const mid = Math.floor(s.length / 2)
+      return s.length % 2 ? String(s[mid]) : trimNum((s[mid - 1] + s[mid]) / 2)
+    }
+    case 'mode': {
+      const counts = new Map<number, number>()
+      for (const n of proof.ns) counts.set(n, (counts.get(n) || 0) + 1)
+      let best = proof.ns[0]
+      let max = 0
+      for (const [n, c] of counts) {
+        if (c > max) {
+          best = n
+          max = c
+        }
+      }
+      return String(best)
+    }
+    case 'pctOf':
+      return trimNum((proof.p * proof.n) / 100)
+    case 'evalLin':
+      return String(proof.m * proof.x + proof.b)
   }
+}
+
+function fmtEq(x: number): string {
+  if (Number.isInteger(x)) return String(x)
+  return frac(Math.round(x * 1000), 1000)
+}
+
+function toSci(n: number): string {
+  if (n === 0) return '0 × 10^0'
+  const sign = n < 0 ? '-' : ''
+  const abs = Math.abs(n)
+  const exp = Math.floor(Math.log10(abs))
+  const coef = abs / 10 ** exp
+  const c = trimNum(Math.round(coef * 100) / 100)
+  return `${sign}${c} × 10^${exp}`
 }
 
 function trimNum(n: number): string {

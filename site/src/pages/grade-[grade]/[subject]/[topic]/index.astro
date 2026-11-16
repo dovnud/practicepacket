@@ -4,6 +4,7 @@ import Breadcrumbs from '../../../../components/Breadcrumbs.astro'
 import { breadcrumbLd } from '../../../../lib/catalog.ts'
 import {
   GRADE_LABEL,
+  GRADE_TONE,
   SUBJECT_LABEL,
   gradesWithSkills,
   skillPath,
@@ -35,7 +36,7 @@ const skills = skillsFor(grade, subject, topic)
 const path = `/grade-${grade}/${subject}/${topic}/`
 const title = `${GRADE_LABEL[grade]} ${label} | Practice Packet`
 const description = `${GRADE_LABEL[grade]} ${label.toLowerCase()} worksheets with three levels and answer keys.`
-const tone: Record<string, string> = { k: 'var(--gk)', '1': 'var(--g1)', '2': 'var(--g2)', '3': 'var(--g3)', '4': 'var(--g4)', '5': 'var(--g5)' }
+const tone = GRADE_TONE
 ---
 <Base title={title} description={description} path={path} jsonld={breadcrumbLd([
   { name: 'Home', path: '/' },

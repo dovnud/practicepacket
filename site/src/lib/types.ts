@@ -43,6 +43,22 @@ export type Proof =
   | { t: 'roundDec'; n: number; place: number }
   | { t: 'decDiv'; a: number; b: number }
   | { t: 'pow10dec'; n: number; pow: number; op: 'mul' | 'div' }
+  | { t: 'fracDivF'; n1: number; d1: number; n2: number; d2: number }
+  | { t: 'eq'; form: 'x+b=c' | 'x-b=c' | 'bx=c' | 'x/b=c' | 'ax+b=c' | 'ax+b=cx+d'; a: number; b: number; c: number; d?: number }
+  | { t: 'ineq'; a: number; b: number; c: number; cmp: '>' | '<' }
+  | { t: 'pythag'; a: number; b: number; find: 'c' | 'leg' }
+  | { t: 'slope'; x1: number; y1: number; x2: number; y2: number }
+  | { t: 'sciTo'; n: number }
+  | { t: 'sciFrom'; coef: number; exp: number }
+  | { t: 'exp'; base: number; pow: number }
+  | { t: 'areaTri'; b: number; h: number }
+  | { t: 'areaTrap'; b1: number; b2: number; h: number }
+  | { t: 'prism'; base: number; h: number }
+  | { t: 'mean'; ns: number[] }
+  | { t: 'median'; ns: number[] }
+  | { t: 'mode'; ns: number[] }
+  | { t: 'pctOf'; p: number; n: number }
+  | { t: 'evalLin'; m: number; x: number; b: number }
 
 export type Display =
   | { kind: 'vertical'; op: '+' | '−' | '×' | '÷'; a: string; b: string }
@@ -54,6 +70,8 @@ export type Display =
   | { kind: 'angle'; deg: number; caption: string }
   | { kind: 'dots'; n: number; caption: string }
   | { kind: 'coord'; x: number; y: number; caption: string }
+  | { kind: 'passage'; text: string; question: string }
+  | { kind: 'trace'; letter: string; script: 'print' | 'cursive' }
 
 export type Problem = {
   prompt: string
@@ -120,10 +138,39 @@ export type Spec =
   | { kind: 'round-dec'; place: number }
   | { kind: 'dec-div' }
   | { kind: 'pow10-dec' }
+  | { kind: 'ratio' }
+  | { kind: 'unit-rate' }
+  | { kind: 'percent' }
+  | { kind: 'frac-div-gen' }
+  | { kind: 'int-line' }
+  | { kind: 'int-add' }
+  | { kind: 'int-mul' }
+  | { kind: 'ops-int' }
+  | { kind: 'eval-expr' }
+  | { kind: 'one-step' }
+  | { kind: 'two-step-eq' }
+  | { kind: 'ineq' }
+  | { kind: 'area-tri-trap' }
+  | { kind: 'prism' }
+  | { kind: 'stats' }
+  | { kind: 'sci-not' }
+  | { kind: 'exponent' }
+  | { kind: 'pythag' }
+  | { kind: 'slope' }
+  | { kind: 'linear' }
+  | { kind: 'trace-letter'; script: 'print' | 'cursive' }
+  | { kind: 'sight-words'; list: 'prek' | 'g1' | 'g2' }
+  | { kind: 'cvc' }
+  | { kind: 'rhyme' }
+  | { kind: 'phonics'; pattern: 'short' | 'long' | 'digraph' | 'blend' }
+  | { kind: 'cap-punct' }
+  | { kind: 'parts-of-speech' }
+  | { kind: 'syn-ant' }
+  | { kind: 'comprehension'; band: '1' | '2' | '3' | '4' | '5' }
 
 export type Skill = {
   id: string
-  batch: 1 | 2 | 3 | 4 | 5
+  batch: 1 | 2 | 3 | 4 | 5 | 6 | 7
   grade: GradeId
   subject: SubjectId
   topic: string
@@ -151,6 +198,18 @@ export const GRADE_LABEL: Record<GradeId, string> = {
   '6': 'Grade 6',
   '7': 'Grade 7',
   '8': 'Grade 8',
+}
+
+export const GRADE_TONE: Record<string, string> = {
+  k: 'var(--gk)',
+  '1': 'var(--g1)',
+  '2': 'var(--g2)',
+  '3': 'var(--g3)',
+  '4': 'var(--g4)',
+  '5': 'var(--g5)',
+  '6': 'var(--g6)',
+  '7': 'var(--g7)',
+  '8': 'var(--g8)',
 }
 
 export const SUBJECT_LABEL: Record<SubjectId, string> = {

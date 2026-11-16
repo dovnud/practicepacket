@@ -1,16 +1,22 @@
 ---
 import Base from '../layouts/Base.astro'
-import { releasedGradeRange } from '../lib/skills.ts'
+import { releasedGradeRange, releasedSubjectPhrase, releasedSubjects } from '../lib/skills.ts'
 const range = releasedGradeRange()
-const description = `Practice Packet publishes free, single-skill math worksheets for ${range}.`
+const subjects = releasedSubjectPhrase()
+const hasReading = releasedSubjects().includes('reading')
+const description = `Practice Packet publishes free, single-skill ${subjects} worksheets for ${range}.`
 ---
 <Base title="About Practice Packet" description={description} path="/about/">
   <div class="prose">
   <h1>About</h1>
   <p class="lede">Practice Packet is a free worksheet site for families and teachers. The pages are written and checked by the Practice Packet team.</p>
-  <p>Each math page is one skill. You get a short explanation, one worked example, and three levels: easy, medium, and hard. The answer key is built from the same problems as the worksheet. Nothing on the free page asks you to log in.</p>
+  <p>Each {hasReading ? 'math or reading ' : 'math '}page is one skill. You get a short explanation, one worked example, and three levels: easy, medium, and hard. The answer key is built from the same problems as the worksheet. Nothing on the free page asks you to log in.</p>
   <p>A “new numbers” button builds another set on the screen without changing the address. The PDF download stays the original set, so a link you saved still prints the same page.</p>
-  <p>The worksheets on this site cover {range}. Reading, writing, and science are part of the site plan and are not published yet. Empty sections are left off the menu on purpose.</p>
+  {hasReading ? (
+    <p>The worksheets on this site cover {range} in math and reading. Science is part of the site plan and is not published yet. Empty sections are left off the menu on purpose.</p>
+  ) : (
+    <p>The worksheets on this site cover {range}. Reading, writing, and science are part of the site plan and are not published yet. Empty sections are left off the menu on purpose.</p>
+  )}
   <p>Questions go to <a href="mailto:contact@practicepacket.com">contact@practicepacket.com</a>.</p>
   </div>
 </Base>

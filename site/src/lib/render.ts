@@ -45,6 +45,10 @@ function renderDisplay(problem: Problem): string {
       return `<div class="dots" aria-label="${d.n} dots">${'●'.repeat(d.n)}</div><p>${escapeHtml(d.caption)}</p>`
     case 'coord':
       return `<div>${coordSvg(d.x, d.y)}<p>${escapeHtml(problem.prompt)}</p></div>`
+    case 'passage':
+      return `<div class="passage-wrap"><p class="passage">${escapeHtml(d.text)}</p><p>${escapeHtml(d.question)}</p></div>`
+    case 'trace':
+      return `<div class="trace-wrap"><div class="trace-letter" data-script="${d.script}">${escapeHtml(d.letter)}</div><p class="trace-caption">${escapeHtml(problem.prompt)}</p></div>`
   }
 }
 
