@@ -1332,6 +1332,28 @@ export function gradesWithSkills(): GradeId[] {
   return grades.filter((g) => have.has(g))
 }
 
+/** Phrase for the grades actually released at the current MAX_BATCH, e.g. "grades 1 through 3". */
+export function formatGradeRange(ids: GradeId[]): string {
+  const ordered = grades.filter((g) => ids.includes(g))
+  if (ordered.length === 0) return 'the grades now on the site'
+  const label = (g: GradeId) => (g === 'k' ? 'kindergarten' : `grade ${g}`)
+  if (ordered.length === 1) return label(ordered[0])
+  const first = ordered[0]
+  const last = ordered[ordered.length - 1]
+  const span = grades.indexOf(last) - grades.indexOf(first) + 1
+  if (ordered.length === span) {
+    if (first === 'k') return `kindergarten through grade ${last}`
+    return `grades ${first} through ${last}`
+  }
+  const names = ordered.map(label)
+  if (names.length === 2) return `${names[0]} and ${names[1]}`
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`
+}
+
+export function releasedGradeRange(): string {
+  return formatGradeRange(gradesWithSkills())
+}
+
 export function subjectsFor(grade: GradeId): string[] {
   return [...new Set(publishedSkills().filter((s) => s.grade === grade).map((s) => s.subject))]
 }

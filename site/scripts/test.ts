@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { sheet } from '../src/lib/generate.ts'
 import { solve } from '../src/lib/solve.ts'
-import { SKILLS, skillPath } from '../src/lib/skills.ts'
+import { SKILLS, formatGradeRange, skillPath } from '../src/lib/skills.ts'
 import { LEVELS } from '../src/lib/types.ts'
 
 const BATCH1 = [
@@ -72,6 +72,15 @@ test('answer keys match the problems for every skill and level', () => {
       }
     }
   }
+})
+
+test('grade range copy follows the released grades', () => {
+  assert.equal(formatGradeRange(['1', '2', '3']), 'grades 1 through 3')
+  assert.equal(formatGradeRange(['k']), 'kindergarten')
+  assert.equal(formatGradeRange(['k', '1', '2', '3', '4', '5']), 'kindergarten through grade 5')
+  assert.equal(formatGradeRange(['4', '5']), 'grades 4 through 5')
+  assert.equal(formatGradeRange(['1', '3']), 'grade 1 and grade 3')
+  assert.equal(formatGradeRange(['1']), 'grade 1')
 })
 
 test('no personal email addresses in skill copy', () => {

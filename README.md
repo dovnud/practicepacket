@@ -1,6 +1,6 @@
 # Practice Packet
 
-Free printable math worksheets for kindergarten through grade 5. Research notes are in `research/`. The site is in `site/`.
+Free printable math worksheets. The grade range in the published copy, meta descriptions, and schema is taken from the skills released at the current `MAX_BATCH` (for example, grades 1 through 3 when `MAX_BATCH=1`). Research notes are in `research/`. The site is in `site/`.
 
 ## Build
 
