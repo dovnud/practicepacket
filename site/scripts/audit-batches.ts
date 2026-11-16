@@ -1,4 +1,4 @@
-import { cpSync, copyFileSync, existsSync, mkdirSync } from 'node:fs'
+import { cpSync, copyFileSync, existsSync, mkdirSync, rmSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { resolve } from 'node:path'
 
@@ -11,10 +11,12 @@ function run(command: string, args: string[], env: NodeJS.ProcessEnv) {
   }
 }
 
-for (const batch of [1, 2, 3, 4, 5]) {
+for (const batch of [1, 2, 3, 4, 5, 6, 7]) {
   console.log(`\n===== auditing MAX_BATCH=${batch} =====`)
   const env = { ...process.env, MAX_BATCH: String(batch), PDF_BASE_URL: '/pdf/' }
   run('npm', ['run', 'build'], env)
+  rmSync(resolve('pdf-out'), { recursive: true, force: true })
+  rmSync(resolve('dist/pdf'), { recursive: true, force: true })
   run('npm', ['run', 'pdfs'], env)
   mkdirSync(resolve('dist/pdf'), { recursive: true })
   cpSync(resolve('pdf-out'), resolve('dist/pdf'), { recursive: true })
@@ -23,4 +25,4 @@ for (const batch of [1, 2, 3, 4, 5]) {
   run('npm', ['run', 'audit'], env)
 }
 
-console.log('\naudit-batches ok: MAX_BATCH 1-5')
+console.log('\naudit-batches ok: MAX_BATCH 1-7')
