@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { sheet } from '../src/lib/generate.ts'
 import { solve } from '../src/lib/solve.ts'
-import { SKILLS, formatGradeRange, skillPath } from '../src/lib/skills.ts'
+import { SKILLS, formatGradeRange, maxBatch, publishedSkills, releasedGradeRange, skillPath } from '../src/lib/skills.ts'
 import { LEVELS } from '../src/lib/types.ts'
 
 const BATCH1 = [
@@ -71,6 +71,44 @@ test('answer keys match the problems for every skill and level', () => {
         }
       }
     }
+  }
+})
+
+test('MAX_BATCH 1-3 keep the current skill sets, and 4-5 only add later waves', () => {
+  const orig = process.env.MAX_BATCH
+  const counts: Record<number, number> = {}
+  try {
+    delete process.env.MAX_BATCH
+    assert.equal(maxBatch(), 3)
+    process.env.MAX_BATCH = '99'
+    assert.equal(maxBatch(), 5)
+    process.env.MAX_BATCH = '0'
+    assert.equal(maxBatch(), 3)
+    for (const batch of [1, 2, 3, 4, 5]) {
+      process.env.MAX_BATCH = String(batch)
+      const pub = publishedSkills()
+      counts[batch] = pub.length
+      assert.equal(pub.every((s) => s.batch <= batch), true)
+      assert.equal(pub.some((s) => s.batch > batch), false)
+      const paths = new Set(pub.map(skillPath))
+      assert.equal(paths.size, pub.length)
+    }
+    assert.equal(counts[1], 17)
+    assert.equal(counts[2], 46)
+    assert.equal(counts[3], 85)
+    assert.ok(counts[4] > counts[3], 'batch 4 should add skills')
+    assert.ok(counts[5] > counts[4], 'batch 5 should add skills')
+    process.env.MAX_BATCH = '1'
+    assert.equal(releasedGradeRange(), 'grades 1 through 3')
+    process.env.MAX_BATCH = '2'
+    assert.equal(releasedGradeRange(), 'grades 1 through 3')
+    process.env.MAX_BATCH = '3'
+    assert.equal(releasedGradeRange(), 'kindergarten through grade 5')
+    process.env.MAX_BATCH = '5'
+    assert.equal(releasedGradeRange(), 'kindergarten through grade 5')
+  } finally {
+    if (orig === undefined) delete process.env.MAX_BATCH
+    else process.env.MAX_BATCH = orig
   }
 })
 

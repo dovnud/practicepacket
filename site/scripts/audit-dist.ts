@@ -1,6 +1,8 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import assert from 'node:assert/strict'
+import { LEVELS } from '../src/lib/types.ts'
+import { maxBatch, pdfRel, publishedSkills, skillPath } from '../src/lib/skills.ts'
 
 const dist = resolve('dist')
 const files: string[] = []
@@ -47,4 +49,38 @@ for (const href of hrefs) {
   assert.ok(pages.has(path) || existsSync(asFile) || existsSync(asDir), `broken internal link ${path}`)
 }
 
-console.log(`audit ok: ${html.length} html files, ${files.length} files in dist`)
+const published = publishedSkills()
+const skillPages = new Set(published.map((s) => skillPath(s)))
+for (const path of skillPages) {
+  assert.ok(pages.has(path), `missing published skill page ${path}`)
+}
+for (const path of pages) {
+  if (!path.startsWith('/grade-')) continue
+  const parts = path.split('/').filter(Boolean)
+  // skill pages are /grade-N/subject/topic/slug/
+  if (parts.length === 4) {
+    assert.ok(skillPages.has(path), `unreleased skill page in dist ${path}`)
+  }
+}
+
+const sitemapPath = existsSync(join(dist, 'sitemap.xml'))
+  ? join(dist, 'sitemap.xml')
+  : join(dist, 'sitemap-0.xml')
+assert.ok(existsSync(sitemapPath), 'missing sitemap.xml or sitemap-0.xml')
+const xml = readFileSync(sitemapPath, 'utf8')
+const sitemapUrls = [...xml.matchAll(/<loc>https:\/\/practicepacket\.com([^<]*)<\/loc>/g)].map((m) => m[1] || '/')
+const sitemapPages = new Set(sitemapUrls.map((u) => (u === '' ? '/' : u)))
+const expectedSitemap = new Set([...pages].filter((p) => p !== '/404.html' && p !== '/404'))
+assert.deepEqual([...sitemapPages].sort(), [...expectedSitemap].sort(), 'sitemap does not match released pages')
+
+const pdfOut = resolve('pdf-out')
+for (const skill of published) {
+  for (const level of LEVELS) {
+    const rel = pdfRel(skill, level)
+    const inDist = join(dist, 'pdf', rel)
+    const inOut = join(pdfOut, rel)
+    assert.ok(existsSync(inDist) || existsSync(inOut), `missing PDF for ${skill.id} ${level} (${rel})`)
+  }
+}
+
+console.log(`audit ok: MAX_BATCH=${maxBatch()}, ${published.length} skills, ${html.length} html files, ${sitemapPages.size} sitemap urls, ${files.length} files in dist`)

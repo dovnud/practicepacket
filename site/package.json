@@ -8,6 +8,7 @@
     "pdfs": "node --experimental-strip-types scripts/pdfs.ts",
     "test": "node --experimental-strip-types --test scripts/test.ts",
     "audit": "node --experimental-strip-types scripts/audit-dist.ts",
+    "audit:batches": "node --experimental-strip-types scripts/audit-batches.ts",
     "check": "npm test && npm run build && npm run pdfs && npm run audit"
   },
   "dependencies": {
