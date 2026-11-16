@@ -12,14 +12,15 @@ const SHAPES: { name: string; sides: number }[] = [
 ]
 
 function countFor(level: Level, spec: Spec): number {
-  const wide = spec.kind === 'clock' || spec.kind === 'frac-bar' || spec.kind === 'frac-line' || spec.kind === 'angle' || spec.kind === 'coord'
+  const wide = spec.kind === 'clock' || spec.kind === 'frac-bar' || spec.kind === 'frac-line' || spec.kind === 'angle' || spec.kind === 'coord' || spec.kind === 'graph' || spec.kind === 'two-step' || spec.kind === 'measure'
   let n = wide ? (level === 'easy' ? 4 : level === 'medium' ? 6 : 8) : level === 'easy' ? 6 : level === 'medium' ? 9 : 12
   if (spec.kind === 'dots') n = Math.min(n, spec.max)
-  if (spec.kind === 'sides') n = Math.min(n, 5)
+  if (spec.kind === 'sides' || spec.kind === 'shape-name') n = Math.min(n, 6)
   if (spec.kind === 'angle') n = Math.min(n, 7)
   if (spec.kind === 'make10') n = Math.min(n, 9)
   if ((spec.kind === 'add' || spec.kind === 'sub') && spec.within && spec.within <= 5) n = Math.min(n, 6)
   if (spec.kind === 'sub' && spec.within && spec.within <= 10) n = Math.min(n, 10)
+  if (spec.kind === 'prime') n = Math.min(n, 10)
   return n
 }
 
@@ -132,6 +133,42 @@ function one(spec: Spec, level: Level, rng: Rng): Problem {
       return longDiv(spec, level, rng)
     case 'mul-tens':
       return mulTens(rng)
+    case 'missing-seq':
+      return missingSeq(spec, rng)
+    case 'shape-name':
+      return shapeName(rng)
+    case 'more-less':
+      return moreLess(level, rng)
+    case 'missing-addend':
+      return missingAddend(spec, level, rng)
+    case 'measure':
+      return measure(spec, level, rng)
+    case 'numline':
+      return numline(spec, level, rng)
+    case 'graph':
+      return graph(level, rng)
+    case 'two-step':
+      return twoStep(level, rng)
+    case 'frac-sub':
+      return fracSub(spec, level, rng)
+    case 'frac-mul-whole':
+      return fracMulWhole(rng)
+    case 'frac-cmp':
+      return fracCmp(level, rng)
+    case 'dec-digit':
+      return decDigit(spec, rng)
+    case 'dec-cmp':
+      return decCmp(spec, level, rng)
+    case 'multiples':
+      return multiples(level, rng)
+    case 'prime':
+      return prime(level, rng)
+    case 'round-dec':
+      return roundDec(spec, level, rng)
+    case 'dec-div':
+      return decDiv(level, rng)
+    case 'pow10-dec':
+      return pow10dec(level, rng)
     default:
       throw new Error('unknown spec')
   }
@@ -280,7 +317,15 @@ function clockProblem(spec: Extract<Spec, { kind: 'clock' }>, rng: Rng): Problem
 function digitProblem(spec: Extract<Spec, { kind: 'digit' }>, rng: Rng): Problem {
   const n = rng.digits(spec.digits)
   const place = rng.pick(spec.places)
-  const placeName = place === 1 ? 'ones' : place === 10 ? 'tens' : place === 100 ? 'hundreds' : place === 1000 ? 'thousands' : 'ten-thousands'
+  const placeName =
+    place === 1 ? 'ones' :
+    place === 10 ? 'tens' :
+    place === 100 ? 'hundreds' :
+    place === 1000 ? 'thousands' :
+    place === 10_000 ? 'ten-thousands' :
+    place === 100_000 ? 'hundred-thousands' :
+    place === 1_000_000 ? 'millions' :
+    'ones'
   return problem(
     `What is the value of the ${placeName} digit in ${n}?`,
     { kind: 'line', text: `Value of the ${placeName} digit in ${n}` },
@@ -459,10 +504,15 @@ function ops(rng: Rng): Problem {
 }
 
 function dec(spec: Extract<Spec, { kind: 'dec' }>, rng: Rng): Problem {
-  const a = rng.int(1, 9) / (spec.op === 'mul' ? 10 : 10)
-  const b = rng.int(1, spec.op === 'sub' ? Math.floor(a * 10) : 9) / 10
-  const left = trim(a)
-  const right = trim(b)
+  const places = spec.places ?? 1
+  const scale = 10 ** places
+  const aInt = rng.int(places === 1 ? 1 : 11, places === 1 ? 9 : scale * 9)
+  const bMax = spec.op === 'sub' ? aInt : (places === 1 ? 9 : scale * 9)
+  const bInt = rng.int(1, Math.max(1, bMax))
+  const a = aInt / scale
+  const b = bInt / scale
+  const left = trimDec(a, places)
+  const right = trimDec(b, places)
   const op = spec.op === 'add' ? '+' : spec.op === 'sub' ? '−' : '×'
   const text = `${left} ${op} ${right}`
   return problem(text, { kind: 'line', text }, { t: 'dec', op: spec.op, a: Number(left), b: Number(right) })
@@ -470,6 +520,10 @@ function dec(spec: Extract<Spec, { kind: 'dec' }>, rng: Rng): Problem {
 
 function trim(n: number): string {
   return n.toFixed(1).replace(/\.0$/, '.0')
+}
+
+function trimDec(n: number, places: number): string {
+  return n.toFixed(places).replace(/0+$/, '').replace(/\.$/, '')
 }
 
 function angle(rng: Rng): Problem {
@@ -561,8 +615,13 @@ function longMul(spec: Extract<Spec, { kind: 'longmul' }>, level: Level, rng: Rn
 }
 
 function longDiv(spec: Extract<Spec, { kind: 'longdiv' }>, level: Level, rng: Rng): Problem {
-  const divisor = rng.int(2, level === 'easy' ? 5 : 9)
-  const quotient = rng.int(3, level === 'easy' ? 9 : 20)
+  const digits = spec.divisorDigits ?? 1
+  const divisor = digits === 2
+    ? rng.int(level === 'easy' ? 11 : 12, level === 'hard' ? 28 : 19)
+    : rng.int(2, level === 'easy' ? 5 : 9)
+  const quotient = digits === 2
+    ? rng.int(level === 'easy' ? 11 : 12, level === 'hard' ? 48 : 28)
+    : rng.int(3, level === 'easy' ? 9 : 20)
   const rem = spec.remainders && level !== 'easy' ? rng.int(1, divisor - 1) : 0
   const dividend = divisor * quotient + rem
   if (rem === 0) return vertical('÷', [dividend, divisor], `${dividend} ÷ ${divisor}`)
@@ -574,6 +633,252 @@ function mulTens(rng: Rng): Problem {
   const a = rng.int(2, 9)
   const b = rng.int(1, 9) * 10
   return vertical('×', [a, b], `${a} × ${b}`)
+}
+
+function missingSeq(spec: Extract<Spec, { kind: 'missing-seq' }>, rng: Rng): Problem {
+  const step = 1
+  const length = 5
+  const startMax = spec.max - step * (length - 1)
+  const start = rng.int(0, Math.max(0, startMax))
+  const index = rng.int(1, length - 2)
+  const value = start + step * index
+  const shown = Array.from({ length }, (_, i) => (i === index ? '__' : String(start + step * i))).join(', ')
+  return problem(`Fill the missing number: ${shown}`, { kind: 'line', text: shown }, { t: 'skip', value })
+}
+
+const NAMED_SHAPES: { name: string; clue: string }[] = [
+  { name: 'triangle', clue: 'This shape has 3 straight sides and 3 corners.' },
+  { name: 'square', clue: 'This shape has 4 equal sides and 4 square corners.' },
+  { name: 'rectangle', clue: 'This shape has 4 sides and 4 square corners. Opposite sides are equal.' },
+  { name: 'circle', clue: 'This shape is perfectly round and has no straight sides.' },
+  { name: 'hexagon', clue: 'This shape has 6 straight sides.' },
+  { name: 'pentagon', clue: 'This shape has 5 straight sides.' },
+]
+
+function shapeName(rng: Rng): Problem {
+  const shape = rng.pick(NAMED_SHAPES)
+  return problem(shape.clue + ' What is the name of the shape?', { kind: 'line', text: shape.clue }, { t: 'lit', value: shape.name })
+}
+
+function moreLess(level: Level, rng: Rng): Problem {
+  const max = level === 'easy' ? 8 : level === 'medium' ? 12 : 16
+  let left = rng.int(1, max)
+  let right = rng.int(1, max)
+  if (level === 'easy' && left === right) right = Math.max(1, right - 1)
+  if (level === 'hard' && rng.int(0, 3) === 0) right = left
+  const value = left === right ? 'equal' : left > right ? 'left' : 'right'
+  const text = `Left has ${left} dots. Right has ${right} dots. Which has more: left, right, or equal?`
+  return problem(text, { kind: 'compare', left: `${left} dots`, right: `${right} dots` }, { t: 'lit', value })
+}
+
+function missingAddend(spec: Extract<Spec, { kind: 'missing-addend' }>, level: Level, rng: Rng): Problem {
+  const cap = level === 'easy' ? Math.min(10, spec.max) : spec.max
+  const total = rng.int(level === 'easy' ? 4 : 6, cap)
+  const known = rng.int(1, total - 1)
+  const text = `${known} + ___ = ${total}`
+  return problem(text, { kind: 'line', text }, { t: 'missing', total, known })
+}
+
+function measure(spec: Extract<Spec, { kind: 'measure' }>, level: Level, rng: Rng): Problem {
+  const unit = spec.unit
+  if (level === 'easy') {
+    const end = rng.int(2, Math.min(8, spec.max))
+    const text = `A ribbon starts at 0 ${unit} and ends at ${end} ${unit}. How long is the ribbon in ${unit}?`
+    return problem(text, { kind: 'line', text }, { t: 'lit', value: String(end) })
+  }
+  const start = rng.int(1, level === 'hard' ? 6 : 4)
+  const length = rng.int(2, Math.min(8, spec.max - start))
+  const end = start + length
+  const text = `A pencil starts at ${start} ${unit} on a ruler and ends at ${end} ${unit}. How long is the pencil in ${unit}?`
+  return problem(text, { kind: 'line', text }, { t: 'sub', a: end, b: start })
+}
+
+function numline(spec: Extract<Spec, { kind: 'numline' }>, level: Level, rng: Rng): Problem {
+  const step = level === 'easy' ? rng.pick([5, 10]) : level === 'medium' ? rng.pick([2, 5, 10]) : rng.pick([1, 2, 5])
+  const length = 5
+  const startMax = spec.max - step * (length - 1)
+  const start = step * rng.int(0, Math.max(0, Math.floor(startMax / step)))
+  const index = rng.int(1, length - 2)
+  const value = start + step * index
+  if (value > spec.max) return numline(spec, level, rng)
+  const shown = Array.from({ length }, (_, i) => (i === index ? '__' : String(start + step * i))).join(', ')
+  const text = `A number line is marked ${shown}. What number is missing?`
+  return problem(text, { kind: 'line', text }, { t: 'skip', value })
+}
+
+function graph(level: Level, rng: Rng): Problem {
+  const labels = rng.pick([
+    ['cats', 'dogs', 'birds'],
+    ['red', 'blue', 'green'],
+    ['apples', 'pears', 'grapes'],
+  ])
+  const cap = level === 'easy' ? 6 : 10
+  const counts = labels.map(() => rng.int(1, cap))
+  if (new Set(counts).size === 1) counts[0] = Math.min(cap, counts[0] + 1)
+  const listed = labels.map((name, i) => `${counts[i]} ${name}`).join(', ')
+  const kind = rng.pick(['one', 'more', 'total'] as const)
+  if (kind === 'one' || (kind === 'more' && level === 'easy')) {
+    const i = rng.int(0, labels.length - 1)
+    const text = `A graph shows ${listed}. How many ${labels[i]} are there?`
+    return problem(text, { kind: 'line', text }, { t: 'lit', value: String(counts[i]) })
+  }
+  if (kind === 'total') {
+    const text = `A graph shows ${listed}. How many in all?`
+    return problem(text, { kind: 'line', text }, { t: 'add', ns: counts })
+  }
+  let i = 0
+  let j = 1
+  if (counts[i] === counts[j]) j = 2
+  if (counts[i] < counts[j]) [i, j] = [j, i]
+  const text = `A graph shows ${listed}. How many more ${labels[i]} than ${labels[j]}?`
+  return problem(text, { kind: 'line', text }, { t: 'sub', a: counts[i], b: counts[j] })
+}
+
+function twoStep(level: Level, rng: Rng): Problem {
+  const name = rng.pick(NAMES)
+  const other = rng.pick(NAMES.filter((n) => n !== name))
+  const kind = rng.pick(['mul-add', 'mul-sub', 'add-sub'] as const)
+  if (kind === 'mul-add') {
+    const groups = rng.int(2, level === 'hard' ? 6 : 4)
+    const each = rng.int(2, level === 'hard' ? 8 : 5)
+    const extra = rng.int(1, 9)
+    const text = `${name} has ${groups} packs with ${each} crayons in each pack, then finds ${extra} more. How many crayons now?`
+    return problem(text, { kind: 'line', text }, { t: 'add', ns: [groups * each, extra] })
+  }
+  if (kind === 'mul-sub') {
+    const groups = rng.int(2, 5)
+    const each = rng.int(3, 8)
+    const total = groups * each
+    const used = rng.int(1, Math.min(9, total - 1))
+    const text = `${name} bakes ${groups} trays of ${each} muffins and gives ${used} away. How many muffins are left?`
+    return problem(text, { kind: 'line', text }, { t: 'sub', a: total, b: used })
+  }
+  const a = rng.int(10, level === 'hard' ? 80 : 40)
+  const b = rng.int(5, 20)
+  const c = rng.int(2, Math.min(15, a + b - 1))
+  const text = `${name} has ${a} stickers. ${other} gives ${name} ${b} more, then ${name} uses ${c}. How many stickers are left?`
+  return problem(text, { kind: 'line', text }, { t: 'sub', a: a + b, b: c })
+}
+
+function fracSub(spec: Extract<Spec, { kind: 'frac-sub' }>, level: Level, rng: Rng): Problem {
+  if (spec.unlike) {
+    for (let i = 0; i < 40; i++) {
+      const d1 = rng.pick([2, 3, 4, 5, 6, 8, 10])
+      const d2 = rng.pick([2, 3, 4, 5, 6, 8, 10].filter((d) => d !== d1))
+      const n1 = rng.int(1, d1)
+      const n2 = rng.int(1, d2 - 1)
+      if (n1 * d2 <= n2 * d1) continue
+      const text = `${n1}/${d1} − ${n2}/${d2}`
+      return problem(text, { kind: 'line', text }, { t: 'fracSub', n1, d1, n2, d2 })
+    }
+    return problem('3/4 − 1/2', { kind: 'line', text: '3/4 − 1/2' }, { t: 'fracSub', n1: 3, d1: 4, n2: 1, d2: 2 })
+  }
+  const d = rng.pick(level === 'easy' ? [2, 3, 4, 5] : [4, 5, 6, 8, 10])
+  const n1 = rng.int(2, d)
+  const n2 = rng.int(1, n1)
+  const text = `${n1}/${d} − ${n2}/${d}`
+  return problem(text, { kind: 'line', text }, { t: 'fracSub', n1, d1: d, n2, d2: d })
+}
+
+function fracMulWhole(rng: Rng): Problem {
+  const n = rng.int(1, 3)
+  const d = rng.int(n + 1, 8)
+  const w = rng.int(2, 6)
+  const text = `${w} × ${n}/${d}`
+  return problem(text, { kind: 'line', text }, { t: 'fracMul', n1: w, d1: 1, n2: n, d2: d })
+}
+
+function fracCmp(level: Level, rng: Rng): Problem {
+  if (level === 'easy') {
+    const d = rng.pick([3, 4, 5, 6, 8])
+    let n1 = rng.int(1, d)
+    let n2 = rng.int(1, d)
+    if (n1 === n2 && rng.int(0, 2) !== 0) n2 = Math.max(1, n1 - 1)
+    const text = `${n1}/${d} ___ ${n2}/${d}`
+    return problem(text, { kind: 'compare', left: `${n1}/${d}`, right: `${n2}/${d}` }, { t: 'fracCmp', n1, d1: d, n2, d2: d })
+  }
+  const n = rng.int(1, 3)
+  const d1 = rng.pick([3, 4, 5, 6, 8])
+  let d2 = rng.pick([3, 4, 5, 6, 8, 10])
+  if (d1 === d2) d2 = d1 + 2
+  const text = `${n}/${d1} ___ ${n}/${d2}`
+  return problem(text, { kind: 'compare', left: `${n}/${d1}`, right: `${n}/${d2}` }, { t: 'fracCmp', n1: n, d1, n2: n, d2 })
+}
+
+function decDigit(spec: Extract<Spec, { kind: 'dec-digit' }>, rng: Rng): Problem {
+  const place = rng.pick(spec.places)
+  const whole = rng.int(1, 40)
+  const tenths = rng.int(0, 9)
+  const hundredths = rng.int(0, 9)
+  const thousandths = spec.places.some((p) => p <= 0.001) ? rng.int(0, 9) : 0
+  const n = whole + tenths / 10 + hundredths / 100 + thousandths / 1000
+  const shown = n.toFixed(spec.places.includes(0.001) ? 3 : spec.places.includes(0.01) ? 2 : 1)
+  const placeName = place === 1 ? 'ones' : place === 0.1 ? 'tenths' : place === 0.01 ? 'hundredths' : place === 0.001 ? 'thousandths' : 'tenths'
+  const text = `What is the value of the ${placeName} digit in ${shown}?`
+  return problem(text, { kind: 'line', text }, { t: 'decDigit', n: Number(shown), place })
+}
+
+function decCmp(spec: Extract<Spec, { kind: 'dec-cmp' }>, level: Level, rng: Rng): Problem {
+  const places = spec.places
+  const scale = 10 ** places
+  let a = rng.int(1, scale * 9)
+  let b = rng.int(1, scale * 9)
+  if (level !== 'hard' && rng.int(0, 4) === 0) b = a
+  const left = (a / scale).toFixed(places).replace(/0+$/, '').replace(/\.$/, '')
+  const right = (b / scale).toFixed(places).replace(/0+$/, '').replace(/\.$/, '')
+  return problem(`${left} ___ ${right}`, { kind: 'compare', left, right }, { t: 'cmp', a: Number(left), b: Number(right) })
+}
+
+function multiples(level: Level, rng: Rng): Problem {
+  const n = rng.int(2, level === 'easy' ? 10 : 15)
+  const list = [1, 2, 3, 4, 5].map((k) => n * k)
+  const text = `List the first five multiples of ${n}.`
+  return problem(text, { kind: 'line', text }, { t: 'lit', value: list.join(', ') })
+}
+
+function prime(level: Level, rng: Rng): Problem {
+  const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+  const composites = [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 27, 28]
+  const pool = level === 'easy' ? [...primes.filter((n) => n <= 19), ...composites.filter((n) => n <= 20)] : [...primes, ...composites]
+  const n = rng.pick(pool)
+  const value = primes.includes(n) ? 'prime' : 'composite'
+  const text = `Is ${n} prime or composite?`
+  return problem(text, { kind: 'line', text }, { t: 'lit', value })
+}
+
+function roundDec(spec: Extract<Spec, { kind: 'round-dec' }>, level: Level, rng: Rng): Problem {
+  const place = level === 'easy' ? 1 : level === 'medium' ? 0.1 : spec.place
+  const finer = place === 1 ? 10 : place === 0.1 ? 100 : 1000
+  const nInt = rng.int(place === 1 ? 15 : 25, finer * (level === 'easy' ? 9 : 20) - 1)
+  // Avoid exact halfway-ending in a trailing 0-only way? Allow normal halves.
+  const n = nInt / finer
+  const shown = n.toFixed(Math.round(Math.log10(finer)))
+  const placeName = place === 1 ? 'whole number' : place === 0.1 ? 'tenth' : place === 0.01 ? 'hundredth' : 'place'
+  const text = `Round ${shown} to the nearest ${placeName}.`
+  return problem(text, { kind: 'line', text }, { t: 'roundDec', n: Number(shown), place })
+}
+
+function decDiv(level: Level, rng: Rng): Problem {
+  const divisor = rng.int(2, level === 'easy' ? 5 : 9)
+  const places = level === 'hard' ? 2 : 1
+  const scale = 10 ** places
+  const quotientInt = rng.int(2, level === 'easy' ? 9 : 25)
+  const dividend = (divisor * quotientInt) / scale
+  const left = dividend.toFixed(places).replace(/0+$/, '').replace(/\.$/, '')
+  const text = `${left} ÷ ${divisor}`
+  return problem(text, { kind: 'line', text }, { t: 'decDiv', a: Number(left), b: divisor })
+}
+
+function pow10dec(level: Level, rng: Rng): Problem {
+  const places = level === 'easy' ? 1 : 2
+  const scale = 10 ** places
+  const n = rng.int(11, scale * 9) / scale
+  const shown = n.toFixed(places).replace(/0+$/, '').replace(/\.$/, '')
+  const pow = level === 'easy' ? rng.pick([1, 2]) : rng.pick([1, 2, 3])
+  const op = rng.pick(['mul', 'div'] as const)
+  const factor = 10 ** pow
+  const text = op === 'mul' ? `${shown} × ${factor}` : `${shown} ÷ ${factor}`
+  return problem(text, { kind: 'line', text }, { t: 'pow10dec', n: Number(shown), pow, op })
 }
 
 export function fracUnused(n: number, d: number): string {

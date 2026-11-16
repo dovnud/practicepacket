@@ -119,6 +119,36 @@ export function solve(proof: Proof): string {
       return String(proof.n + 1)
     case 'skip':
       return String(proof.value)
+    case 'lit':
+      return proof.value
+    case 'fracSub': {
+      const n = proof.n1 * proof.d2 - proof.n2 * proof.d1
+      const d = proof.d1 * proof.d2
+      return frac(n, d)
+    }
+    case 'fracCmp': {
+      const left = proof.n1 * proof.d2
+      const right = proof.n2 * proof.d1
+      return left === right ? '=' : left > right ? '>' : '<'
+    }
+    case 'decDigit': {
+      const thousandths = Math.round(proof.n * 1000)
+      const place = Math.round(proof.place * 1000)
+      const value = (Math.floor(thousandths / place) % 10) * proof.place
+      return trimNum(value)
+    }
+    case 'roundDec': {
+      const thousandths = Math.round(proof.n * 1000)
+      const place = Math.round(proof.place * 1000)
+      const rounded = Math.round(thousandths / place) * place
+      return trimNum(rounded / 1000)
+    }
+    case 'decDiv':
+      return trimNum(Math.round((proof.a / proof.b) * 1000) / 1000)
+    case 'pow10dec': {
+      const scale = 10 ** proof.pow
+      return trimNum(proof.op === 'mul' ? proof.n * scale : proof.n / scale)
+    }
   }
 }
 

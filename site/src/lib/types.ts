@@ -36,6 +36,13 @@ export type Proof =
   | { t: 'sides'; name: string; n: number }
   | { t: 'next'; n: number }
   | { t: 'skip'; value: number }
+  | { t: 'lit'; value: string }
+  | { t: 'fracSub'; n1: number; d1: number; n2: number; d2: number }
+  | { t: 'fracCmp'; n1: number; d1: number; n2: number; d2: number }
+  | { t: 'decDigit'; n: number; place: number }
+  | { t: 'roundDec'; n: number; place: number }
+  | { t: 'decDiv'; a: number; b: number }
+  | { t: 'pow10dec'; n: number; pow: number; op: 'mul' | 'div' }
 
 export type Display =
   | { kind: 'vertical'; op: '+' | '−' | '×' | '÷'; a: string; b: string }
@@ -84,7 +91,7 @@ export type Spec =
   | { kind: 'volume' }
   | { kind: 'coord' }
   | { kind: 'ops' }
-  | { kind: 'dec'; op: 'add' | 'sub' | 'mul' }
+  | { kind: 'dec'; op: 'add' | 'sub' | 'mul'; places?: 1 | 2 | 3 }
   | { kind: 'angle' }
   | { kind: 'dots'; max: number }
   | { kind: 'sides' }
@@ -93,12 +100,30 @@ export type Spec =
   | { kind: 'tenmore' }
   | { kind: 'word'; op: 'add' | 'sub' | 'mul' | 'div'; max: number }
   | { kind: 'longmul'; by: 1 | 2 }
-  | { kind: 'longdiv'; remainders: boolean }
+  | { kind: 'longdiv'; remainders: boolean; divisorDigits?: 1 | 2 }
   | { kind: 'mul-tens' }
+  | { kind: 'missing-seq'; max: number }
+  | { kind: 'shape-name' }
+  | { kind: 'more-less' }
+  | { kind: 'missing-addend'; max: number }
+  | { kind: 'measure'; max: number; unit: 'inches' | 'units' }
+  | { kind: 'numline'; max: number }
+  | { kind: 'graph' }
+  | { kind: 'two-step' }
+  | { kind: 'frac-sub'; unlike?: boolean }
+  | { kind: 'frac-mul-whole' }
+  | { kind: 'frac-cmp' }
+  | { kind: 'dec-digit'; places: number[] }
+  | { kind: 'dec-cmp'; places: 1 | 2 | 3 }
+  | { kind: 'multiples' }
+  | { kind: 'prime' }
+  | { kind: 'round-dec'; place: number }
+  | { kind: 'dec-div' }
+  | { kind: 'pow10-dec' }
 
 export type Skill = {
   id: string
-  batch: 1 | 2 | 3
+  batch: 1 | 2 | 3 | 4 | 5
   grade: GradeId
   subject: SubjectId
   topic: string
