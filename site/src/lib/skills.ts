@@ -602,6 +602,12 @@ export const SKILLS: Skill[] = [
     topic: 'addition',
     topicLabel: 'Addition',
     slug: 'within-100-mixed',
+    toolNote: {
+      before: 'Building a week of practice from more than one level? Download each PDF, then',
+      label: "Benchzy's free merge PDF tool",
+      url: 'https://benchzy.com/merge-pdf/',
+      after: ' combines them into a single file, right in your browser. Nothing is uploaded.',
+    },
     title: 'Mixed addition within 100',
     description: 'Grade 2 addition within 100, mixing problems that regroup with problems that do not.',
     explanation: 'Do not assume every problem carries. Check the ones column. If it is 9 or less, write it and move on. If it is 10 or more, regroup.',

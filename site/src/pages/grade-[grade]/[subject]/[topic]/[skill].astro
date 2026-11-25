@@ -123,6 +123,7 @@ const payload = JSON.stringify({ id: skill.id, spec: skill.spec }).replaceAll('<
   )}
   <script id="skill-spec" type="application/json" set:html={payload} />
   <p class="note no-print">The new-numbers button needs JavaScript. The downloaded PDF stays the original set, so a link you share does not change.</p>
+  {skill.toolNote && <p class="note no-print">{skill.toolNote.before} <a href={skill.toolNote.url}>{skill.toolNote.label}</a>{skill.toolNote.after}</p>}
 </Base>
 <script>
   import { makeProblems } from '../../../../lib/generate.ts'

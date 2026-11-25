@@ -184,6 +184,7 @@ export type Skill = {
   standard: { code: string; summary: string }
   spec: Spec
   related: string[]
+  toolNote?: { before: string; label: string; url: string; after: string }
 }
 
 export const LEVELS: Level[] = ['easy', 'medium', 'hard']
